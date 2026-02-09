@@ -242,6 +242,13 @@ export function useAuthGate(): UseAuthGateReturn  {
   console.log("IS:",clientId);
 
 
+const handleGoogleResponse = useCallback(async (response: GoogleCredentialResponse) => {
+  try {
+    const idToken = response?.credential;
+    if (!idToken) {
+      setGoogleError("Missing Google credential.");
+      return;
+    }
 
   const handleGoogleResponse = useCallback(async (response: GoogleCredentialResponse) => {
     try {
@@ -281,13 +288,17 @@ export function useAuthGate(): UseAuthGateReturn  {
         return;
       }
 
-      setGoogleUserId(userId || "Unknown user");
-      setGoogleAuthed(true);
-      setGoogleError("");
-    } catch (e: unknown) {
-      console.error("[AuthGate] Firebase sign-in failed:", e);
-      setGoogleError("Failed to sign in to Firebase.");
+    if (!currentUser) {
+      setGoogleError("Unable to verify signed-in account.");
       setGoogleAuthed(false);
+      return;
+    }
+
+    // 3) Agora sim checa bloqueio usando UID + email
+    const blocked = await checkBlockedUser(currentUser.uid, currentUser.email);
+    if (blocked) {
+      await signOut(auth);
+      return;
     }
   }, [checkBlockedUser, ensureAuthReady, signInWithGoogleIdToken]);
 
