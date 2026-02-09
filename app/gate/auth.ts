@@ -242,55 +242,44 @@ export function useAuthGate(): UseAuthGateReturn  {
   console.log("IS:",clientId);
 
 
-
-  const handleGoogleResponse = useCallback(async (response: GoogleCredentialResponse) => {
-    try {
-      const idToken = response?.credential;
-      if (!idToken) {
-        setGoogleError("Missing Google credential.");
-        return;
-      }
-
-      const userId = parseGoogleCredential(idToken);
-      const normalizedEmail = userId.toLowerCase();
-      if (!normalizedEmail) {
-        setGoogleError("Unable to read Google account email.");
-        setGoogleAuthed(false);
-        setGoogleUserId("");
-        return;
-      }
-      if (await checkBlockedUser(normalizedEmail)) {
-        return;
-      }
-      await ensureAuthReady();
-      if (await checkBlockedUser(normalizedEmail)) {
-        return;
-      }
-      await signInWithGoogleIdToken(idToken);
-      await ensureAuthReady();
-      const currentUser = auth?.currentUser ?? null;
-      if (!currentUser) {
-        setGoogleError("Unable to verify signed-in account.");
-        setGoogleAuthed(false);
-        setGoogleUserId("");
-        return;
-      }
-      if (await checkBlockedUser(currentUser.uid, currentUser.email)) {
-        if (auth) {
-          await signOut(auth);
-        }
-        return;
-      }
-
-      setGoogleUserId(userId || "Unknown user");
-      setGoogleAuthed(true);
-      setGoogleError("");
-    } catch (e: unknown) {
-      console.error("[AuthGate] Firebase sign-in failed:", e);
-      setGoogleError("Failed to sign in to Firebase.");
-      setGoogleAuthed(false);
+const handleGoogleResponse = useCallback(async (response: GoogleCredentialResponse) => {
+  try {
+    const idToken = response?.credential;
+    if (!idToken) {
+      setGoogleError("Missing Google credential.");
+      return;
     }
-  }, [checkBlockedUser, ensureAuthReady, signInWithGoogleIdToken]);
+
+    // 1) Faz login primeiro
+    await signInWithGoogleIdToken(idToken);
+
+    // 2) Aguarda auth refletir o usuário
+    await ensureAuthReady();
+    const currentUser = auth?.currentUser ?? null;
+
+    if (!currentUser) {
+      setGoogleError("Unable to verify signed-in account.");
+      setGoogleAuthed(false);
+      return;
+    }
+
+    // 3) Agora sim checa bloqueio usando UID + email
+    const blocked = await checkBlockedUser(currentUser.uid, currentUser.email);
+    if (blocked) {
+      await signOut(auth);
+      return;
+    }
+
+    setGoogleUserId(currentUser.email || currentUser.uid);
+    setGoogleAuthed(true);
+    setGoogleError("");
+  } catch (e) {
+    console.error("[AuthGate] Firebase sign-in failed:", e);
+    setGoogleError("Failed to sign in to Firebase.");
+    setGoogleAuthed(false);
+  }
+}, [auth, checkBlockedUser, ensureAuthReady, signInWithGoogleIdToken]);
+
 
   const verifyPin = useCallback(async () => {
     setPinError("");
