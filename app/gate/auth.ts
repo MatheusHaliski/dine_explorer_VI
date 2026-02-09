@@ -150,7 +150,7 @@ export function useAuthGate(): UseAuthGateReturn  {
     async (email: string, reason: string) => {
       if (!db || !hasFirebaseConfig) return;
       const normalizedEmail = email.toLowerCase();
-      await setDoc(doc(db, "blousers", normalizedEmail), {
+      await setDoc(doc(db, "blockedusers1", normalizedEmail), {
         email: normalizedEmail,
         blockedAt: serverTimestamp(),
         reason,
@@ -214,12 +214,6 @@ export function useAuthGate(): UseAuthGateReturn  {
       const normalizedEmail = userId.toLowerCase();
       if (!normalizedEmail) {
         setGoogleError("Unable to read Google account email.");
-        setGoogleAuthed(false);
-        setGoogleUserId("");
-        return;
-      }
-      if (normalizedEmail !== ALLOWED_GOOGLE_EMAIL) {
-        setGoogleError(`Not allowed.`);
         setGoogleAuthed(false);
         setGoogleUserId("");
         return;
