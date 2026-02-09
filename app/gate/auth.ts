@@ -131,7 +131,7 @@ export function useAuthGate(): UseAuthGateReturn  {
     async (email: string) => {
       if (!db || !hasFirebaseConfig) return false;
       const normalizedEmail = email.toLowerCase();
-      const blockedRef = doc(db, "blousers", normalizedEmail);
+      const blockedRef = doc(db, "blockedusers1", normalizedEmail);
       const blockedSnap = await getDoc(blockedRef);
       if (blockedSnap.exists()) {
         setIsBlocked(true);
