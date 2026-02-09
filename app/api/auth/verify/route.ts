@@ -120,10 +120,9 @@ export async function POST(request: NextRequest): Promise<Response> {
 
         return NextResponse.json({ ok: true });
     } catch (error) {
-        console.error("[Auth Verify API] credential check failed:", error);
-        return NextResponse.json(
-            { error: "Unable to verify credentials right now." },
-            { status: 500 }
-        );
+    console.error("[Auth Verify API] FAILED", {
+    message: error?.message,
+    stack: error?.stack,
+    name: error?.name,
     }
 }
