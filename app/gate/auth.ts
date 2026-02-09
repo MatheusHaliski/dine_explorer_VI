@@ -297,7 +297,7 @@ const handleGoogleResponse = useCallback(async (response: GoogleCredentialRespon
     // 3) Agora sim checa bloqueio usando UID + email
     const blocked = await checkBlockedUser(currentUser.uid, currentUser.email);
     if (blocked) {
-      await signOut(auth);
+      await signOut(auth!);
       return;
     }
   }, [checkBlockedUser, ensureAuthReady, signInWithGoogleIdToken]);
