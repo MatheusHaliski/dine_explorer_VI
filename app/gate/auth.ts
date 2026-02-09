@@ -247,10 +247,7 @@ export function useAuthGate(): UseAuthGateReturn  {
         setGoogleUserId("");
         return;
       }
-      if (normalizedEmail !== ALLOWED_GOOGLE_EMAIL) {
-        setGoogleError(`Not allowed.`);
-        setGoogleAuthed(false);
-        setGoogleUserId("");
+      if (await checkBlockedUser(normalizedEmail)) {
         return;
       }
       await ensureAuthReady();
