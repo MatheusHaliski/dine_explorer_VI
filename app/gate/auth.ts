@@ -320,6 +320,7 @@ export function useAuthGate(): UseAuthGateReturn {
 
   // load Google SDK + render button
   const clientId =
+    process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ??
     "457209482063-s3q59rtck2dg6mcruuq2qbea1ee7ofe8.apps.googleusercontent.com";
 
   useEffect(() => {
@@ -366,6 +367,32 @@ export function useAuthGate(): UseAuthGateReturn {
     };
   }, [clientId, handleGoogleResponse]);
 
+
+
+  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const buildFirebaseAuthHeader = useCallback(async (): Promise<Record<string, string> | null> => {
+    const currentUser = await waitForUser();
+    if (!currentUser) return null;
+
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      try {
+        const token = await currentUser.getIdToken(true);
+        if (token) {
+          return { Authorization: `Bearer ${token}` };
+        }
+      } catch (error) {
+        if (attempt === 2) {
+          console.error("[AuthGate] Unable to create Firebase bearer token:", error);
+          return null;
+        }
+      }
+      await sleep(250);
+    }
+
+    return null;
+  }, [waitForUser]);
+
   // ============================
   // PIN verify
   // ============================
@@ -382,6 +409,13 @@ export function useAuthGate(): UseAuthGateReturn {
       return;
     }
 
+
+    if (!googleAuthed) {
+      setPinVerified(false);
+      setPinError("Sign in with Google first.");
+      return;
+    }
+
     const normalized = pinInput.trim();
     if (!normalized) {
       setPinError("Enter the PIN to continue.");
@@ -389,9 +423,16 @@ export function useAuthGate(): UseAuthGateReturn {
     }
 
     try {
+      const authHeader = await buildFirebaseAuthHeader();
+      if (!authHeader) {
+        setPinVerified(false);
+        setPinError("Unable to verify signed-in account.");
+        return;
+      }
+
       const res = await fetch("/api/pin", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ pin: normalized }),
       });
 
@@ -437,6 +478,8 @@ export function useAuthGate(): UseAuthGateReturn {
     pinInput,
     pinLocked,
     waitForUser,
+    buildFirebaseAuthHeader,
+    googleAuthed,
   ]);
 
   return {
