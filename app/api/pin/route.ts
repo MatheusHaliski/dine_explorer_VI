@@ -159,7 +159,7 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     const token = makeToken(secret);
 
-    const res = json({ ok: true, email: identity.email }, 200);
+    const res = json({ ok: true }, 200);
     res.headers.set("Set-Cookie", buildSetCookie(token));
     return res;
 }
@@ -181,7 +181,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     const ok = verifyToken(token, secret);
     if (!ok) return json({ ok: false }, 401);
 
-    return json({ ok: true, email: identity.email }, 200);
+    return json({ ok: true }, 200);
 }
 
 export async function DELETE(request: NextRequest): Promise<Response> {
