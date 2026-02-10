@@ -372,7 +372,7 @@ export function useAuthGate(): UseAuthGateReturn {
     const currentUser = await waitForUser();
     if (!currentUser) return null;
 
-    const token = await currentUser.getIdToken();
+    const token = await currentUser.getIdToken(true);
     if (!token) return null;
 
     return { Authorization: `Bearer ${token}` };
@@ -391,6 +391,13 @@ export function useAuthGate(): UseAuthGateReturn {
 
     if (pinLocked) {
       setPinError("Too many incorrect PIN attempts. Please contact support.");
+      return;
+    }
+
+
+    if (!googleAuthed) {
+      setPinVerified(false);
+      setPinError("Sign in with Google first.");
       return;
     }
 
@@ -457,6 +464,7 @@ export function useAuthGate(): UseAuthGateReturn {
     pinLocked,
     waitForUser,
     buildFirebaseAuthHeader,
+    googleAuthed,
   ]);
 
   return {
