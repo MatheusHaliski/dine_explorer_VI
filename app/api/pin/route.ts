@@ -70,7 +70,7 @@ function buildClearCookie() {
 }
 
 export async function POST(request: NextRequest): Promise<Response> {
-    const hash = process.env.PIN_HASH;
+    const hash = "$2b$05$0PBMbEUT1v6vedJo0cN6guSzQ16utWukLn3lRQpIGrjk3Xc3clTem";
     const secret = process.env.PIN_COOKIE_SECRET;
 
     if (!hash) return json({ ok: false, error: "PIN_HASH not configured." }, 500);
