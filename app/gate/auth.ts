@@ -182,12 +182,13 @@ export function useAuthGate(): UseAuthGateReturn {
 
       try {
         // check by UID
+        if (uid){
         const uidRef = doc(db, "blousers", uid);
         const uidSnap = await getDoc(uidRef);
         if (uidSnap.exists()) return true;
-
+        }
         // check by email (normalized)
-        if (email) {
+        else if (email) {
           const normalizedEmail = email.toLowerCase();
           const emailRef = doc(db, "blousers", normalizedEmail);
           const emailSnap = await getDoc(emailRef);
