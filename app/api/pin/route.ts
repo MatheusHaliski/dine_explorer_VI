@@ -133,10 +133,6 @@ function buildClearCookie() {
 }
 
 export async function POST(request: NextRequest): Promise<Response> {
-    const identity = await verifyAllowedGoogleIdentity(request);
-    if (!identity.ok) {
-        return identity.response;
-    }
 
     const hash = process.env.PIN_HASH;
     const secret = process.env.PIN_COOKIE_SECRET;
@@ -169,10 +165,6 @@ export async function POST(request: NextRequest): Promise<Response> {
 }
 
 export async function GET(request: NextRequest): Promise<Response> {
-    const identity = await verifyAllowedGoogleIdentity(request);
-    if (!identity.ok) {
-        return identity.response;
-    }
 
     const secret = process.env.PIN_COOKIE_SECRET;
     if (!secret) return json({ ok: false }, 500);
