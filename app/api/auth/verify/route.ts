@@ -79,10 +79,7 @@ const verifyPassword = async (password: string, digest: UserRecord) => {
 };
 
 export async function POST(request: NextRequest): Promise<Response> {
-    const identity = await verifyAllowedGoogleIdentity(request);
-    if (!identity.ok) {
-        return identity.response;
-    }
+
     let body: AuthPayload = {};
     try {
         body = (await request.json()) as AuthPayload;
