@@ -27,6 +27,9 @@ const AUTH_VERIFY_IP_LIMIT_MAX = Number(
 const AUTH_VERIFY_EMAIL_LIMIT_MAX = Number(
     process.env.AUTH_VERIFY_RATE_LIMIT_EMAIL_MAX ?? "5"
 );
+const AUTH_VERIFY_EMAIL_GLOBAL_LIMIT_MAX = Number(
+    process.env.AUTH_VERIFY_RATE_LIMIT_EMAIL_GLOBAL_MAX ?? "12"
+);
 const AUTH_VERIFY_LIMIT_WINDOW_MS = Number(
     process.env.AUTH_VERIFY_RATE_LIMIT_WINDOW_MS ?? "60000"
 );
@@ -124,6 +127,28 @@ export async function POST(request: NextRequest): Promise<Response> {
                 { status: 429 }
             );
             response.headers.set("Retry-After", String(emailRateLimit.retryAfterSeconds));
+            return response;
+        }
+
+        const emailGlobalRateLimit = consumeRateLimit({
+            namespace: "auth-verify-email-global",
+            key: email,
+            maxRequests: AUTH_VERIFY_EMAIL_GLOBAL_LIMIT_MAX,
+            windowMs: AUTH_VERIFY_LIMIT_WINDOW_MS,
+        });
+
+        if (!emailGlobalRateLimit.allowed) {
+            const response = NextResponse.json(
+                {
+                    error:
+                        "Too many verification attempts for this account. Please try again shortly.",
+                },
+                { status: 429 }
+            );
+            response.headers.set(
+                "Retry-After",
+                String(emailGlobalRateLimit.retryAfterSeconds)
+            );
             return response;
         }
     }
