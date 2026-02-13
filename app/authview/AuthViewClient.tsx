@@ -108,14 +108,15 @@ export default function AuthViewClient() {
                     "shadow-[0_20px_50px_rgba(0,0,0,0.35)]",
                 ].join(" ")}
             >
-                <div className={[
-                    "space-y-6",
-                    "rounded-3xl",
-                    "border-amber-300 border-8",
-                    "bg-white",
-                    "p-6 sm:p-8",
-                    "shadow-[0_20px_50px_rgba(0,0,0,0.35)]",
-                ].join(" ")}>
+                <div   className={[
+    "space-y-6",
+    "rounded-3xl",
+    "border-amber-300 border-8",
+    "p-6 sm:p-8",
+    "shadow-[0_20px_50px_rgba(0,0,0,0.35)]",
+    "bg-[url('/bg-panel.png')]",
+    "bg-cover bg-center bg-no-repeat",
+  ].join(" ")}>
                     <label className="text-lg font-semibold text-orange-600">
                         Email Address
                         <input
