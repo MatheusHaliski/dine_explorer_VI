@@ -117,8 +117,8 @@ export default function AuthShell({
             >
               <div className="flex flex-col items-center justify-center gap-3">
                 <img
-                  src="/1E8229A2-91F0-4EE7-A227-8B9CF14A4F2B.png"
-                  alt="Friendly Eats"
+                  src="/A1BCBA00-AE79-42DB-A9F9-E4633086EF24.png"
+                  alt="DineExplorer"
                   className={[
                     "w-full max-w-[520px] object-contain",
                     "h-24 sm:h-28 md:h-32 lg:h-36",
