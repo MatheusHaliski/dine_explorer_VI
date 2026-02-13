@@ -42,13 +42,13 @@ export default function AuthShell({
         >
           <div className="flex items-center gap-4">
             <img
-              src="/1E8229A2-91F0-4EE7-A227-8B9CF14A4F2B.png"
+              src="/A1BCBA00-AE79-42DB-A9F9-E4633086EF24.pngg"
               alt="DineExplorer"
               className="h-12 sm:h-14 w-auto object-contain"
             />
             <div className="hidden sm:block font-sharetech leading-tight">
               <div className="text-xs font-semibold tracking-[0.22em] text-orange-600 uppercase">
-                Friendly Eats
+                DineExplorer
               </div>
               <div className="text-sm font-semibold text-amber-500">
                 {/* opcional: tagline curta */}
