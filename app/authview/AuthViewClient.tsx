@@ -9,46 +9,6 @@ import {clearAuthSessionToken, setAuthSessionProfile, setAuthSessionToken} from 
 import { getDevSessionToken, setDevSessionToken } from "@/app/lib/devSession";
 
 
-const createTopRightTexturePoints = () => {
-    const steps = 145;
-    const points = [];
-
-    for (let row = 0; row < steps; row += 1) {
-        for (let column = 0; column < steps; column += 1) {
-            if ((row + column) % 6 === 0) continue;
-
-            const index = row * steps + column;
-            const isPipa = index % 4 === 0;
-            const source = isPipa
-                ? "/pipa.png"
-                : (row + column) % 2 === 0
-                  ? "/losangle-blue.svg"
-                  : "/losangle-orange.svg";
-
-            const size = isPipa ? 48 : 34;
-            const rotation = (row - column) * 9;
-
-            points.push(
-                <img
-                    key={`auth-point-${row}-${column}`}
-                    src={source}
-                    alt=""
-                    aria-hidden
-                    className="absolute opacity-60 drop-shadow-[0_12px_24px_rgba(0,0,0,0.2)]"
-                    style={{
-                        top: `${0 + row * 1}%`,
-                        right: `${0 + column * 1}%`,
-                        width: `${size}px`,
-                        height: `${size}px`,
-                        transform: `rotate(${rotation}deg)`,
-                    }}
-                />
-            );
-        }
-    }
-
-    return points;
-};
 
 export default function AuthViewClient() {
     const router = useRouter();
