@@ -531,7 +531,7 @@ export default function AuthShell({ title, subtitle, description, children }: Au
                             className={[
                                 "rounded-2xl",
                                 "w-full",
-                                "bg-yellow-100",
+                                "bg-white",
                                 "text-amber-500",
                                 GLOW_LINE,
                                 "shadow-[0_18px_60px_rgba(0,0,0,0.25)]",
