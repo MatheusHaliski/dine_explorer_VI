@@ -36,8 +36,8 @@ const createTopRightTexturePoints = () => {
                     aria-hidden
                     className="absolute opacity-60 drop-shadow-[0_12px_24px_rgba(0,0,0,0.2)]"
                     style={{
-                        top: `${4 + row * 1}%`,
-                        right: `${2 + column * 1}%`,
+                        top: `${0 + row * 1}%`,
+                        right: `${0 + column * 1}%`,
                         width: `${size}px`,
                         height: `${size}px`,
                         transform: `rotate(${rotation}deg)`,
@@ -162,7 +162,7 @@ export default function AuthViewClient() {
                     "space-y-6",
                     "rounded-3xl",
                     "border-amber-300 border-8",
-                    "fe-form-material",
+                    "bg-white",
                     "p-6 sm:p-8",
                     "shadow-[0_20px_50px_rgba(0,0,0,0.35)]",
                 ].join(" ")}>
