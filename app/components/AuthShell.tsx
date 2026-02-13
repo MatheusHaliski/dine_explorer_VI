@@ -39,7 +39,7 @@ export default function AuthShell({ title, subtitle, description, children, extr
         <div
             className={[
                 "relative min-h-screen",
-                 "fe-form-material"
+                 "fe-form-material",
                 "px-4 py-10 sm:px-8",
             ].join(" ")}
         >
