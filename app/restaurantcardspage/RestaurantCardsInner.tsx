@@ -505,28 +505,28 @@ export function RestaurantCardsInner() {
                 <img
                     src="/losangle-blue.svg"
                     alt=""
-                    className="absolute left-1/4 top-[35%] h-20 w-20 opacity-60 drop-shadow-[0_14px_26px_rgba(37,99,235,0.22)]"
+                    className="absolute left-[40%] top-[45%] h-20 w-20 opacity-60 drop-shadow-[0_14px_26px_rgba(37,99,235,0.22)]"
                 />
                 <img
                     src="/losangle-orange.svg"
                     alt=""
-                    className="absolute right-1/3 top-[42%] h-20 w-20 opacity-60 drop-shadow-[0_14px_26px_rgba(249,115,22,0.22)]"
+                    className="absolute  left-[40%] top-[40%] h-20 w-20 opacity-60 drop-shadow-[0_14px_26px_rgba(249,115,22,0.22)]"
                 />
 
                 <img
                     src="/star-gradient.svg"
                     alt=""
-                    className="absolute left-[45%] top-[38%] h-16 w-16 opacity-75"
+                    className="absolute l left-[40%] top-[47%] h-16 w-16 opacity-75"
                 />
                 <img
                     src="/star-orange.svg"
                     alt=""
-                    className="absolute right-[48%] top-[48%] h-14 w-14 opacity-70"
+                    className="absolute  left-[60%] top-[65%] h-14 w-14 opacity-70"
                 />
                 <img
                     src="/star-orange.svg"
                     alt=""
-                    className="absolute right-[40%] top-[58%] h-14 w-14 opacity-70"
+                    className="absolute  left-[70%] top-[75%] h-14 w-14 opacity-70"
                 />
                 <img
                     src="/star-orange.svg"
@@ -603,6 +603,18 @@ export function RestaurantCardsInner() {
                     alt=""
                     className="absolute right-4 bottom-14 h-10 w-10 opacity-70"
                 />
+                  {/* ✅ add-ons: +10 pipas */}
+                <img src="/pipa.png" alt="" className="absolute right-[50%] top-[50%]  h-12 w-12 opacity-65 drop-shadow-[0_18px_40px_rgba(0,0,0,0.14)] rotate-[18deg]" />
+                <img src="/pipa.png" alt="" className="absolute right-[50%] top-[40%]  h-12 w-12 opacity-65 drop-shadow-[0_18px_40px_rgba(0,0,0,0.14)] rotate-[18deg]" />
+                <img src="/pipa.png" alt="" className="absolute right-[40%] top-[44%]  h-10 w-10 opacity-55 drop-shadow-[0_18px_40px_rgba(0,0,0,0.12)] -rotate-[24deg]" />
+                <img src="/pipa.png" alt="" className="absolute left-[30%] top-[18%]  h-9  w-9  opacity-60 drop-shadow-[0_18px_40px_rgba(0,0,0,0.12)] rotate-[32deg]" />
+                <img src="/pipa.png" alt="" className="absolute left-[20%] top-[40%]  h-12 w-12 opacity-50 drop-shadow-[0_18px_40px_rgba(0,0,0,0.12)] -rotate-[10deg]" />
+                <img src="/pipa.png" alt="" className="absolute left-[40%] top-[28%]  h-10 w-10 opacity-60 drop-shadow-[0_18px_40px_rgba(0,0,0,0.12)] rotate-[46deg]" />
+                <img src="/pipa.png" alt="" className="absolute left-[20%] bottom-[12%] h-12 w-12 opacity-50 drop-shadow-[0_18px_40px_rgba(0,0,0,0.12)] -rotate-[38deg]" />
+                <img src="/pipa.png" alt="" className="absolute right-[40%] top-[54%] h-10 w-10 opacity-60 drop-shadow-[0_18px_40px_rgba(0,0,0,0.12)] rotate-[14deg]" />
+                <img src="/pipa.png" alt="" className="absolute right-[20%] top-[10%] h-12 w-12 opacity-55 drop-shadow-[0_18px_40px_rgba(0,0,0,0.12)] -rotate-[20deg]" />
+                <img src="/pipa.png" alt="" className="absolute right-[60%] bottom-[18%] h-10 w-10 opacity-60 drop-shadow-[0_18px_40px_rgba(0,0,0,0.12)] rotate-[28deg]" />
+                <img src="/pipa.png" alt="" className="absolute right-[80%]  top-[42%]  h-12 w-12 opacity-50 drop-shadow-[0_18px_40px_rgba(0,0,0,0.12)] -rotate-[52deg]" />
             </div>
 
 
