@@ -18,13 +18,8 @@ body {
 .fe-fragmented-texture {
   background-color: #f8f6ef;
   background-image:
-   url("/bg-panel.png"),
-    repeating-linear-gradient(
-      0deg,
-      rgba(255, 255, 255, 0.94) 0 14px,
-      rgba(255, 255, 255, 0.66) 14px 28px
-    );
-  background-size: 320px 320px, 300px 300px, 290px 290px, 260px 260px, 190px 190px;
+   url("/bg-panel.png");
+  background-size: 720px 720px, 1300px 700px, 1290px 790px, 760px 760px, 790px 790px;
   background-position: 0 0, 38px 16px, 74px -30px, -45px 60px, 0 0;
 }
 
