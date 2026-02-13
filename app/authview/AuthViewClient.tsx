@@ -205,7 +205,7 @@ export default function AuthViewClient() {
                     "w-full space-y-6",
                     "rounded-3xl",
                     "border-amber-300 border-8",
-                    "fe-form-material",
+                    "bg-white",
                     "p-6 sm:p-8",
                     "shadow-[0_20px_50px_rgba(0,0,0,0.35)]",
                 ].join(" ")}
