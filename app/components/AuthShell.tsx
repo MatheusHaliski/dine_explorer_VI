@@ -48,7 +48,7 @@ export default function AuthShell({
             />
             <div className="hidden sm:block font-sharetech leading-tight">
               <div className="text-xs font-semibold tracking-[0.22em] text-orange-600 uppercase">
-                DineExplorer
+                Dinexplorer
               </div>
               <div className="text-sm font-semibold text-amber-500">
                 {/* opcional: tagline curta */}
