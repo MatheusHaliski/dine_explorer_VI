@@ -5,6 +5,7 @@ type AuthShellProps = {
     subtitle: string;
     description?: string;
     children: ReactNode;
+    extraDecorations?: ReactNode;
 };
 
 const GLASS = "border border-white/20 bg-white/10";
@@ -33,7 +34,7 @@ const GLASS_PANEL =
 const GLASS_INPUT =
     "h-12 w-full rounded-2xl border border-white/14 bg-white/[0.08] backdrop-blur-2xl px-3 text-white placeholder:text-white/45 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/35";
 
-export default function AuthShell({ title, subtitle, description, children }: AuthShellProps) {
+export default function AuthShell({ title, subtitle, description, children, extraDecorations }: AuthShellProps) {
     return (
         <div
             className={[
@@ -139,6 +140,8 @@ export default function AuthShell({ title, subtitle, description, children }: Au
 
 
             </div>
+
+            {extraDecorations}
 
             {/* decorations */}
             <div className="pointer-events-none absolute inset-0">

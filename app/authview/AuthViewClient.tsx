@@ -8,6 +8,48 @@ import {VSModalPaged} from  "@/app/lib/authAlerts";
 import {clearAuthSessionToken, setAuthSessionProfile, setAuthSessionToken} from "@/app/lib/authSession";
 import { getDevSessionToken, setDevSessionToken } from "@/app/lib/devSession";
 
+
+const createTopRightTexturePoints = () => {
+    const steps = 5;
+    const points: JSX.Element[] = [];
+
+    for (let row = 0; row < steps; row += 1) {
+        for (let column = 0; column < steps; column += 1) {
+            if ((row + column) % 6 === 0) continue;
+
+            const index = row * steps + column;
+            const isPipa = index % 4 === 0;
+            const source = isPipa
+                ? "/pipa.png"
+                : (row + column) % 2 === 0
+                  ? "/losangle-blue.svg"
+                  : "/losangle-orange.svg";
+
+            const size = isPipa ? 48 : 34;
+            const rotation = (row - column) * 9;
+
+            points.push(
+                <img
+                    key={`auth-point-${row}-${column}`}
+                    src={source}
+                    alt=""
+                    aria-hidden
+                    className="absolute opacity-60 drop-shadow-[0_12px_24px_rgba(0,0,0,0.2)]"
+                    style={{
+                        top: `${4 + row * 19}%`,
+                        right: `${2 + column * 19}%`,
+                        width: `${size}px`,
+                        height: `${size}px`,
+                        transform: `rotate(${rotation}deg)`,
+                    }}
+                />
+            );
+        }
+    }
+
+    return points;
+};
+
 export default function AuthViewClient() {
     const router = useRouter();
     const [email, setEmail] = useState("");
@@ -95,7 +137,15 @@ export default function AuthViewClient() {
     }
 
     return (
-        <AuthShell title="Sign In" subtitle="Welcome back">
+        <AuthShell
+            title="Sign In"
+            subtitle="Welcome back"
+            extraDecorations={
+                <div className="pointer-events-none absolute inset-0 z-[6]">
+                    {createTopRightTexturePoints()}
+                </div>
+            }
+        >
             <form
                 onSubmit={handleSubmit}
                 className={[
@@ -103,7 +153,7 @@ export default function AuthViewClient() {
                     "rounded-3xl",
                     "mt-16",
                     "border-amber-300 border-8",
-                    "bg-yellow-100",
+                    "fe-form-material",
                     "p-6 sm:p-8",
                     "shadow-[0_20px_50px_rgba(0,0,0,0.35)]",
                 ].join(" ")}
@@ -112,7 +162,7 @@ export default function AuthViewClient() {
                     "space-y-6",
                     "rounded-3xl",
                     "border-amber-300 border-8",
-                    "bg-white",
+                    "fe-form-material",
                     "p-6 sm:p-8",
                     "shadow-[0_20px_50px_rgba(0,0,0,0.35)]",
                 ].join(" ")}>
@@ -155,7 +205,7 @@ export default function AuthViewClient() {
                     "w-full space-y-6",
                     "rounded-3xl",
                     "border-amber-300 border-8",
-                    "bg-yellow-100",
+                    "fe-form-material",
                     "p-6 sm:p-8",
                     "shadow-[0_20px_50px_rgba(0,0,0,0.35)]",
                 ].join(" ")}
