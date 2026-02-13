@@ -93,7 +93,7 @@ export default function AuthShell({
             "rounded-3xl",
             GLOW_BAR,
             GLOW_LINE,
-            "bg-[url('/bg-panel.png')] bg-cover bg-center bg-no-repeat",
+            "bg-white bg-cover bg-center bg-no-repeat",
           ].join(" ")}
         >
           {/* FORM CONTAINER */}
@@ -101,7 +101,7 @@ export default function AuthShell({
             className={[
               "w-full space-y-6 rounded-3xl p-6 sm:p-8",
               "border-amber-300 border-4",
-              "bg-[url('/bg-panel.png')] bg-cover bg-center bg-no-repeat",
+              "bg-white bg-cover bg-center bg-no-repeat",
               "shadow-[0_20px_50px_rgba(0,0,0,0.35)]",
             ].join(" ")}
           >
