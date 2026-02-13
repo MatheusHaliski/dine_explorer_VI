@@ -18,10 +18,7 @@ body {
 .fe-fragmented-texture {
   background-color: #f8f6ef;
   background-image:
-    linear-gradient(28deg, transparent 0 42%, rgba(233, 146, 36, 0.18) 42% 58%, transparent 58%),
-    linear-gradient(-33deg, transparent 0 45%, rgba(64, 126, 168, 0.18) 45% 62%, transparent 62%),
-    linear-gradient(63deg, transparent 0 36%, rgba(82, 154, 105, 0.16) 36% 52%, transparent 52%),
-    linear-gradient(-58deg, transparent 0 38%, rgba(150, 71, 127, 0.13) 38% 53%, transparent 53%),
+   url("/bg-panel.png");
     repeating-linear-gradient(
       0deg,
       rgba(255, 255, 255, 0.94) 0 14px,
