@@ -140,11 +140,6 @@ export default function AuthViewClient() {
         <AuthShell
             title="Sign In"
             subtitle="Welcome back"
-            extraDecorations={
-                <div className="pointer-events-none absolute inset-0 z-[6]">
-                    {createTopRightTexturePoints()}
-                </div>
-            }
         >
             <form
                 onSubmit={handleSubmit}
