@@ -288,12 +288,12 @@ export default function AuthShell({ title, subtitle, description, children }: Au
                 <img
                     src="/losangle-orange.svg"
                     alt=""
-                    className="absolute right-[55%] top-14 h-12 w-12  rotate-[22deg]"
+                    className="absolute right-[5%] top-[%54] h-12 w-12  rotate-[22deg]"
                 />
                 <img
                     src="/losangle-blue.svg"
                     alt=""
-                    className="absolute left-[55%] bottom-16 h-16 w-16  -rotate-[14deg]"
+                    className="absolute left-[5%] bottom-16 h-16 w-16  -rotate-[14deg]"
                 />
 
                 <img
@@ -304,57 +304,57 @@ export default function AuthShell({ title, subtitle, description, children }: Au
                 <img
                     src="/star-gradient.svg"
                     alt=""
-                    className="absolute left-[52%] bottom-16 h-16 w-16  -rotate-[14deg]"
+                    className="absolute left-[2%] bottom-[37%] h-16 w-16  -rotate-[14deg]"
                 />
                 <img
                     src="/star-gradient.svg"
                     alt=""
-                    className="absolute left-[42%] bottom-86 h-16 w-16  -rotate-[14deg]"
+                    className="absolute left-[2%] bottom-[77%] h-16 w-16  -rotate-[14deg]"
                 />
                 <img
                     src="/star-gradient.svg"
                     alt=""
-                    className="absolute left-[52%] bottom-6 h-16 w-16 opacity-50 -rotate-[14deg]"
+                    className="absolute left-[2%] bottom-[57%] h-16 w-16 opacity-50 -rotate-[14deg]"
                 />
                 <img
                     src="/star-gradient.svg"
                     alt=""
-                    className="absolute left-[52%] bottom-6 h-16 w-16 opacity-50 -rotate-[14deg]"
+                    className="absolute left-[2%] bottom-[57%] h-16 w-16 opacity-50 -rotate-[14deg]"
                 />
                 <img
                     src="/star-orange.svg"
                     alt=""
-                    className="absolute left-[52%] top-17 h-9 w-9 opacity-60"
+                    className="absolute left-[2%] top-[50%] h-9 w-9 opacity-60"
                 />
                 <img
                     src="/star-orange.svg"
                     alt=""
-                    className="absolute left-[52%] top-17 h-9 w-9 opacity-60"
+                    className="absolute left-[2%]top-[57%]h-9 w-9 opacity-60"
                 />
                 <img
                     src="/star-orange.svg"
                     alt=""
-                    className="absolute left-[66%] top-17 h-9 w-9 opacity-60"
+                    className="absolute right-[6%] top-[57%] h-9 w-9 opacity-60"
                 />
                 <img
                     src="/star-orange.svg"
                     alt=""
-                    className="absolute left-[67%] top-7 h-9 w-9 opacity-60"
+                    className="absolute right-[3%] top-[54%] h-9 w-9 opacity-60"
                 />
                 <img
                     src="/star-orange.svg"
                     alt=""
-                    className="absolute left-[42%] top-17 h-9 w-9 opacity-60"
+                    className="absolute right-[4%] top-[59%] h-9 w-9 opacity-60"
                 />
                 <img
                     src="/star-orange.svg"
                     alt=""
-                    className="absolute left-[46%] top-[18%] h-12 w-12 opacity-45"
+                    className="absolute right-[4%] top-[18%] h-12 w-12 opacity-45"
                 />
                 <img
                     src="/star-gradient.svg"
                     alt=""
-                    className="absolute right-[45%] bottom-4 h-10 w-10 opacity-55"
+                    className="absolute right-[4%] bottom-[64%] h-10 w-10 opacity-55"
                 />
                 <img
                     src="/pipa.png"
