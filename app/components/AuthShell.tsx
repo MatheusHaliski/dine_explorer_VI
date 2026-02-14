@@ -120,7 +120,7 @@ export default function AuthShell({
                   src="/A1BCBA00-AE79-42DB-A9F9-E4633086EF24.png"
                   alt="DineExplorer"
                   className={[
-                    "w-full max-w-[520px] object-contain",
+                    "w-full max-w-[720px] object-contain",
                     "h-24 sm:h-28 md:h-32 lg:h-36",
                   ].join(" ")}
                 />
