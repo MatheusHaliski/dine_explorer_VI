@@ -35,22 +35,17 @@ export default function AuthShell({
       <div className="absolute left-4 top-6 z-20 sm:left-10 lg:left-16">
         <div
           className={[
-            "w-fit rounded-2xl border-4 border-yellow-100 bg-white px-4 py-3 text-amber-500",
+            "flex h-24 w-44 items-center justify-center rounded-2xl border-4 border-yellow-100 bg-white px-3 py-2 text-amber-500 sm:h-28 sm:w-52",
             GLOW_LINE,
             "shadow-[0_18px_60px_rgba(0,0,0,0.25)]",
           ].join(" ")}
         >
-          <div className="flex items-center gap-4">
+          <div className="flex h-full w-full items-center justify-center">
             <img
               src="/A1BCBA00-AE79-42DB-A9F9-E4633086EF24.png"
               alt="DineExplorer"
-              className="h-12 w-auto object-contain sm:h-14"
+              className="h-full w-full object-contain"
             />
-            <div className="hidden font-sharetech leading-tight sm:block">
-              <div className="text-sm font-semibold text-amber-500">
-                {/* opcional: tagline curta */}
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -59,20 +54,17 @@ export default function AuthShell({
       <div className="absolute right-4 top-6 z-20 sm:right-10 lg:right-16">
         <div
           className={[
-            "w-fit rounded-2xl border-4 border-yellow-100 bg-white px-4 py-3 text-amber-500",
+            "flex h-24 w-44 items-center justify-center rounded-2xl border-4 border-yellow-100 bg-white px-3 py-2 text-amber-500 sm:h-28 sm:w-52",
             GLOW_LINE,
             "shadow-[0_18px_60px_rgba(0,0,0,0.25)]",
           ].join(" ")}
         >
-          <div className="flex items-center gap-4">
+          <div className="flex h-full w-full items-center justify-center">
             <img
               src="/VI.jpeg"
               alt="Velion"
-              className="h-12 w-auto object-contain sm:h-14"
+              className="h-full w-full object-contain"
             />
-            <div className="hidden font-sharetech leading-tight sm:block">
-              {/* opcional: texto do badge direito */}
-            </div>
           </div>
         </div>
       </div>
