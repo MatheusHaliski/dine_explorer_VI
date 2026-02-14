@@ -518,7 +518,7 @@ export function RestaurantCardsInner() {
                             />
                             <div className="hidden sm:block font-sametech leading-tight">
                                 <div className="text-xs font-semibold tracking-[0.22em] text-orange-600 uppercase">
-                                    Friendly Eats
+                                    DINE EXPLORER
                                 </div>
                                 <div className="text-sm font-semibold text-amber-500">
 
