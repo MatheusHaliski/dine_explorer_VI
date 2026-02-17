@@ -1,12 +1,49 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "node:crypto";
 import { getAdminFirestore } from "@/app/lib/firebaseAdmin";
 import { signupPayloadSchema } from "@/app/signupview/schema";
+
+export const runtime = "nodejs";
 
 type SignupPayload = {
     name?: string;
     email?: string;
     password?: string;
 };
+
+const HASH_ALGORITHM = "SHA-256";
+const HASH_ITERATIONS = 310000;
+const APP_PEPPER = "vs-usercontrol-v1";
+
+const generateSalt = () => crypto.randomBytes(16).toString("base64");
+
+const buildSalt = (saltBase64: string) =>
+    Buffer.concat([
+        Buffer.from(saltBase64, "base64"),
+        Buffer.from(APP_PEPPER),
+    ]);
+
+const hashPassword = (
+    password: string,
+    saltBase64: string,
+    iterations: number
+): Promise<string> =>
+    new Promise((resolve, reject) => {
+        crypto.pbkdf2(
+            password,
+            buildSalt(saltBase64),
+            iterations,
+            32,
+            "sha256",
+            (error, derivedKey) => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                resolve(derivedKey.toString("base64"));
+            }
+        );
+    });
 
 export async function POST(request: NextRequest): Promise<Response> {
     let body: SignupPayload = {};
@@ -54,10 +91,20 @@ export async function POST(request: NextRequest): Promise<Response> {
             );
         }
 
+        const passwordSalt = generateSalt();
+        const passwordHash = await hashPassword(
+            parsed.data.password,
+            passwordSalt,
+            HASH_ITERATIONS
+        );
+
         await db.collection("VSusercontrol").add({
             name: normalizedName,
             email: normalizedEmail,
-            password: parsed.data.password,
+            passwordHash,
+            passwordSalt,
+            passwordIterations: HASH_ITERATIONS,
+            passwordHashAlgorithm: HASH_ALGORITHM,
             createdAt: new Date().toISOString(),
         });
 
