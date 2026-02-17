@@ -132,7 +132,7 @@ export function RestaurantCardsInner() {
 
         if (selectedCategory === "bakery/cafe") {
             return {
-                backgroundImage: 'url("/fallbackcafe.png")',
+                backgroundImage: 'url("/8BDC5E16-EBA8-4B48-9646-1C85F71587B6.png")',
                 backgroundPosition: "left top",
                 backgroundRepeat: "repeat",
                 backgroundSize: "260px 200px",
