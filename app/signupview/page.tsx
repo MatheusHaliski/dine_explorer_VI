@@ -23,7 +23,7 @@ export default function SignupViewPage() {
                     Start your Dine Explorer journey
                 </p>
                  <Image
-                    src="/welcome-newcomers.png"
+                    src="/B0F71DEC-49A9-41D5-81E0-647E9E1A74D7_1_105_c.jpeg"
                     alt="Welcome image for newcomers"
                     width={1024}
                     height={1024}
