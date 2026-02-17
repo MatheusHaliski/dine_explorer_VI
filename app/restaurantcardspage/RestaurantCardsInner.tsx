@@ -146,9 +146,10 @@ export function RestaurantCardsInner() {
                 backgroundSize: "240px 180px",
             };
         }
-        }
+      
 
         return undefined;
+          }
     }, [category]);
     const [starsFilter, setStarsFilter] = useState("");
     const catalogById = useMemo(() => {
