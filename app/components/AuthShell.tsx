@@ -42,7 +42,7 @@ export default function AuthShell({
         >
           <div className="flex h-full w-full items-center justify-center">
             <img
-              src="/8F897497-4F06-4D51-8537-1FEF8E0386E1.png"
+              src="/1E8AEB0C-78BC-42FD-9113-73F1A0728A3A_1_105_c.jpeg"
               alt="DineExplorer"
               className="h-full w-full object-contain"
             />
@@ -101,7 +101,7 @@ export default function AuthShell({
             >
               <div className="flex flex-col items-center justify-center gap-3">
                 <img
-                  src="/8F897497-4F06-4D51-8537-1FEF8E0386E1.png"
+                  src="/1E8AEB0C-78BC-42FD-9113-73F1A0728A3A_1_105_c.jpeg"
                   alt="DineExplorer"
                   className="h-64 w-full max-w-[720px] object-contain sm:h-62 md:h-66 lg:h-68"
                 />
