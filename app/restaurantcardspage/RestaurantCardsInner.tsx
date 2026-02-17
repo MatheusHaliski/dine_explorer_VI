@@ -137,6 +137,14 @@ export function RestaurantCardsInner() {
                 backgroundRepeat: "repeat",
                 backgroundSize: "260px 200px",
             };
+        if (selectedCategory === "fast food") {
+            return {
+                backgroundImage: 'url("/fastfoodbg.png")',
+                backgroundPosition: "left top",
+                backgroundRepeat: "repeat",
+                backgroundSize: "240px 180px",
+            };
+        }
         }
 
         return undefined;
