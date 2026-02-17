@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { CSSProperties, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -117,6 +117,30 @@ export function RestaurantCardsInner() {
     const [stateValue, setStateValue] = useState("");
     const [city, setCity] = useState("");
     const [category, setCategory] = useState("");
+
+    const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
+        const selectedCategory = category.trim().toLowerCase();
+
+        if (selectedCategory === "japanese") {
+            return {
+                backgroundImage: 'url("/friendly-eats-japan.png")',
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "cover",
+            };
+        }
+
+        if (selectedCategory === "bakery/cafe") {
+            return {
+                backgroundImage: 'url("/fallbackcafe.png")',
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "cover",
+            };
+        }
+
+        return undefined;
+    }, [category]);
     const [starsFilter, setStarsFilter] = useState("");
     const catalogById = useMemo(() => {
         const entries = catalog.map((restaurant) => [restaurant.id, restaurant] as const);
@@ -481,7 +505,7 @@ export function RestaurantCardsInner() {
     const userPhoto = authProfileLabel ? "" : getUserPhotoUrl(user);
 
     return (
-        <div className="relative min-h-screen fe-fragmented-texture text-black">
+        <div className="relative min-h-screen fe-fragmented-texture text-black" style={pageBackgroundStyle}>
             <div className="pointer-events-none absolute inset-0 opacity-80">
                 <div className="absolute -left-24 top-16 h-72 w-72 rounded-full bg-[#22c55e]/20 blur-[140px]" />
                 <div className="absolute left-1/2 top-32 h-80 w-80 -translate-x-1/2 rounded-full bg-[#38bdf8]/25 blur-[160px]" />
