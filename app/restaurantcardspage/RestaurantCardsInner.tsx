@@ -135,7 +135,7 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                 backgroundImage: 'url("/8BDC5E16-EBA8-4B48-9646-1C85F71587B6_1_105_c.jpeg")',
                 backgroundPosition: "left top",
                 backgroundRepeat: "repeat",
-                backgroundSize: "260px 200px",
+                backgroundSize: "220px 220px",
             };
         }
 
@@ -144,7 +144,7 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                 backgroundImage: 'url("/fastfoodbg.png")',
                 backgroundPosition: "left top",
                 backgroundRepeat: "repeat",
-                backgroundSize: "240px 180px",
+                backgroundSize: "220px 220px",
             };
         }
 
