@@ -150,7 +150,7 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
 
         return undefined;
     }, [category]);
-    }, [category]);
+    
     const [starsFilter, setStarsFilter] = useState("");
     const catalogById = useMemo(() => {
         const entries = catalog.map((restaurant) => [restaurant.id, restaurant] as const);
