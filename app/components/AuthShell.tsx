@@ -107,7 +107,7 @@ export default function AuthShell({
                 />
 
                 <div className="hidden font-sharetech leading-tight sm:block">
-                  <div className="text-center text-base font-semibold uppercase tracking-[0.22em] text-orange-500 sm:text-lg md:text-xl">
+                  <div className="text-center text-base font-bold uppercase tracking-[0.22em] text-green-500 sm:text-2xl">
                     DINE EXPLORER
                   </div>
                   <div className="text-center text-base font-semibold uppercase tracking-[0.22em] text-orange-500 sm:text-lg md:text-xl">
