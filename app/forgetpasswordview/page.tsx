@@ -73,10 +73,10 @@ export default function SignupViewPage() {
         <AuthShell
             title="Password reset"
             subtitle="Send yourself a reset link"
-            description="Enter your account email."
+            description="Enter your account email"
         >
 
-            <div className="flex flex-col w-[120%] bg-white border-8 rounded-2xl border-orange-400 items-center">
+            <div className="flex flex-col w-[120%] sm:h-[80px] bg-white border-8 rounded-2xl border-orange-400 items-center">
                 <form className="-translate-x-10 space-y-8 text-base mt-0" onSubmit={handleSubmit}>
                     <label className="block text-xl font-semibold text-orange-600 leading-tight">
                         Email address
