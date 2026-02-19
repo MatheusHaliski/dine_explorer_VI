@@ -14,7 +14,8 @@ export default function SignupViewPage() {
                     "space-y-4",
                     "rounded-3xl",
                     "border-8 border-orange-500",
-                    "bg-white",
+                    "bg-white/45",
+                    "fe-glass-panel",
                     "p-4 sm:p-6",
                     "shadow-[0_20px_50px_rgba(0,0,0,0.35)]",
                 ].join(" ")}
@@ -34,7 +35,8 @@ export default function SignupViewPage() {
                     "space-y-4",
                     "rounded-3xl",
                     "border-amber-300 border-8", // ✅ requested
-                    "bg-white",
+                    "bg-white/45",
+                    "fe-glass-panel",
                     "p-6 sm:p-8",
                     "shadow-[0_20px_50px_rgba(0,0,0,0.35)]",
     ].join(" ")}
