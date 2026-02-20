@@ -99,19 +99,31 @@ export default function AuthShell({
                 "shadow-[0_18px_60px_rgba(0,0,0,0.25)]",
               ].join(" ")}
             >
-              <div className="flex flex-col items-center justify-center gap-3">
-                <img
-                  src="/1E8AEB0C-78BC-42FD-9113-73F1A0728A3A_1_105_c.jpeg"
-                  alt="DineExplorer"
-                  className="h-64 w-full max-w-[720px] object-contain sm:h-62 md:h-66 lg:h-68"
-                />
+              <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-2">
+                <div className="flex flex-col items-center justify-center gap-3">
+                  <img
+                    src="/1E8AEB0C-78BC-42FD-9113-73F1A0728A3A_1_105_c.jpeg"
+                    alt="DineExplorer"
+                    className="h-64 w-full max-w-[720px] object-contain sm:h-62 md:h-66 lg:h-68"
+                  />
 
-                <div className="hidden font-sharetech leading-tight sm:block">
-                  <div className="text-center font-sharetech text-2xl font-bold uppercase tracking-[0.22em] text-orange-500 sm:text-5xl md:text-6xl">
-                    DINE EXPLORER
+                  <div className="hidden font-sharetech leading-tight sm:block">
+                    <div className="text-center font-sharetech text-2xl font-bold uppercase tracking-[0.22em] text-orange-500 sm:text-5xl md:text-6xl">
+                      DINE EXPLORER
+                    </div>
+                    <div className="text-center text-base font-semibold uppercase tracking-[0.22em] text-orange-500 sm:text-lg md:text-xl">
+                      Find your favorite places at a glance.
+                    </div>
                   </div>
-                  <div className="text-center text-base font-semibold uppercase tracking-[0.22em] text-orange-500 sm:text-lg md:text-xl">
-                    Find your favorite places at a glance.
+                </div>
+
+                <div className="w-full">
+                  <div className="overflow-hidden rounded-2xl border-4 border-amber-300 shadow-[0_18px_60px_rgba(0,0,0,0.25)]">
+                    <img
+                      src="/6B7E76C2-291B-4D8A-B006-CA5C6FFDE516.png"
+                      alt="Dine Explorer featured visual"
+                      className="h-full w-full object-cover"
+                    />
                   </div>
                 </div>
               </div>
