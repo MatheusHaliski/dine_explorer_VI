@@ -175,6 +175,15 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
             };
             
         }
+     if (selectedCategory === "mexican") {
+            return {
+                backgroundImage: 'url("/9C7464B5-579E-4D0D-947F-B24A4D449097.pngg")',
+                backgroundPosition: "left top",
+                backgroundRepeat: "repeat",
+                backgroundSize: "220px 220px",
+            };
+            
+        }
         return undefined;
     }, [category]);
     
