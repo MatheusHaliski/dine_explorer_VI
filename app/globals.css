@@ -26,8 +26,9 @@ body {
   background-color: #f8f6ef;
   background-image:
    url("/40B2DBFA-7211-45CC-8A4E-9B79AF0C81CA.png");
-  background-size: 20px 20px, 20px 20px, 20px 20px, 20px 20px, 20px 20px;
-  background-position: 0 0, 38px 16px, 74px -30px, -45px 60px, 0 0;
+  background-position: 0 0;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 
