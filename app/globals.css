@@ -25,8 +25,8 @@ body {
 .fe-fragmented-texture {
   background-color: #f8f6ef;
   background-image:
-   url("/60BFD590-FF10-42E9-AEEC-AE103F7DF1BF.png");
-  background-size: 120px 120px, 100px 100px, 290px 190px, 260px 260px, 290px 290px;
+   url("/40B2DBFA-7211-45CC-8A4E-9B79AF0C81CA.png");
+  background-size: 20px 20px, 20px 20px, 20px 20px, 20px 20px, 20px 20px;
   background-position: 0 0, 38px 16px, 74px -30px, -45px 60px, 0 0;
 }
 
@@ -34,7 +34,7 @@ body {
 .fe-form-material {
   background-color: #f4efe2;
   background-image:
-    url("/60BFD590-FF10-42E9-AEEC-AE103F7DF1BF.png");
+    url("/40B2DBFA-7211-45CC-8A4E-9B79AF0C81CA.png");
   background-position: 0 0;
   background-size: cover;
   background-repeat: no-repeat;
