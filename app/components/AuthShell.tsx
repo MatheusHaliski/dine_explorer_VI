@@ -111,9 +111,6 @@ export default function AuthShell({
                     <div className="text-center font-sharetech text-2xl font-bold uppercase tracking-[0.22em] text-orange-500 sm:text-5xl md:text-6xl">
                       DINE EXPLORER
                     </div>
-                    <div className="text-center text-base font-semibold uppercase tracking-[0.22em] text-orange-500 sm:text-lg md:text-xl">
-                      Find your favorite places at a glance.
-                    </div>
                   </div>
                 </div>
 
