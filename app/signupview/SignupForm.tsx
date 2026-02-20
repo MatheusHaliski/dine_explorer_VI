@@ -142,7 +142,7 @@ export default function SignupForm() {
                             </FormLabel>
                             <FormControl>
                                 <Input
-                                    placeholder="Jane Doe"
+                                    placeholder="Your full name"
                                     {...field}
                                     className={`text-lg text-black placeholder:text-gray-400 ${
                                         form.formState.errors.name
@@ -166,7 +166,7 @@ export default function SignupForm() {
                             </FormLabel>
                             <FormControl>
                                 <Input
-                                    placeholder="you@example.com"
+                                    placeholder="Your e-mail"
                                     type="email"
                                     {...field}
                                     className={`text-lg text-black placeholder:text-gray-400 ${
