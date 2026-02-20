@@ -177,7 +177,16 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
         }
      if (selectedCategory === "mexican") {
             return {
-                backgroundImage: 'url("/9C7464B5-579E-4D0D-947F-B24A4D449097.pngg")',
+                backgroundImage: 'url("/9C7464B5-579E-4D0D-947F-B24A4D449097.png")',
+                backgroundPosition: "left top",
+                backgroundRepeat: "repeat",
+                backgroundSize: "220px 220px",
+            };
+            
+        }
+     if (selectedCategory === "arabic") {
+            return {
+                backgroundImage: 'url("/public/D03D8233-DBB7-43DD-8590-986225967093.png")',
                 backgroundPosition: "left top",
                 backgroundRepeat: "repeat",
                 backgroundSize: "220px 220px",
