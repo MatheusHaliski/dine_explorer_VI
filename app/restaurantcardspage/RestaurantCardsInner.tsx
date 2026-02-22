@@ -212,6 +212,15 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
             };
             
         }
+        if (selectedCategory === "açai & bowls") {
+            return {
+                backgroundImage: 'url("/13C7D1E7-948D-42DB-846F-8D5AEA265881.jpeg")',
+                backgroundPosition: "left top",
+                backgroundRepeat: "repeat",
+                backgroundSize: "220px 220px",
+            };
+            
+        }
         return undefined;
     }, [category]);
     
