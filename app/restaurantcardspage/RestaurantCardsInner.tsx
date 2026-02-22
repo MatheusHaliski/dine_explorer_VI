@@ -361,7 +361,7 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
 
     useEffect(() => {
         void VSModalPaged({
-            title: "Alert",
+            title: "Alert: how do I use Dine Explorer?",
             messages: [
                 "Click on an image to see restaurant details. Use the filters to enhance your experience.",
             ],
