@@ -221,6 +221,15 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
             };
             
         }
+        if (selectedCategory === "argentine") {
+            return {
+                backgroundImage: 'url("/54AEB9FC-4CD5-4E03-9460-05DE0FBA1C1A.jpeg")',
+                backgroundPosition: "left top",
+                backgroundRepeat: "repeat",
+                backgroundSize: "220px 220px",
+            };
+            
+        }
         return undefined;
     }, [category]);
     
