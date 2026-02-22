@@ -246,6 +246,14 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                 backgroundSize: "220px 220px",
             };
         }
+     if (selectedCategory === "grocery") {
+            return {
+                backgroundImage: 'url("/75CE0333-DF13-4DD2-A211-C79DDD4A6072.jpeg")',
+                backgroundPosition: "left top",
+                backgroundRepeat: "repeat",
+                backgroundSize: "220px 220px",
+            };
+        }
         return undefined;
     }, [category]);
     
