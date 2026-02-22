@@ -254,6 +254,14 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                 backgroundSize: "220px 220px",
             };
         }
+        if (selectedCategory === "casual/local") {
+            return {
+                backgroundImage: 'url("/B9C14361-6F3F-4378-8099-4109F7098575.png")',
+                backgroundPosition: "left top",
+                backgroundRepeat: "repeat",
+                backgroundSize: "220px 220px",
+            };
+        }
         return undefined;
     }, [category]);
     
