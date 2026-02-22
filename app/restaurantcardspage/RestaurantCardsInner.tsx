@@ -46,7 +46,8 @@ import {
 } from "@/app/lib/authSession";
 
 
-import {getAuthSessionToken} from "@/app/lib/authSession";
+import { getAuthSessionToken } from "@/app/lib/authSession";
+import { getLS, setLS } from "@/app/lib/SafeStorage";
 /* =========================
    Data fetch (Server)
 ========================= */
@@ -362,16 +363,13 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
         const profile = getAuthSessionProfile();
         const userKey = profile.email?.trim().toLowerCase() || "anonymous";
         const storageKey = `${newcomerAlertStoragePrefix}:${userKey}`;
-        const hasSeenNewcomerAlert =
-            typeof window !== "undefined" && window.localStorage.getItem(storageKey) === "1";
+        const hasSeenNewcomerAlert = getLS(storageKey) === "1";
 
         if (hasSeenNewcomerAlert) {
             return;
         }
 
-        if (typeof window !== "undefined") {
-            window.localStorage.setItem(storageKey, "1");
-        }
+        setLS(storageKey, "1");
 
         void VSModalPaged({
             title: "Alert: how do I use Dine Explorer?",
