@@ -154,7 +154,12 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
         alt: "Mexican decoration",
       };
     };
-
+     if (normalized.includes("vegan")) {
+       return {
+        src: "/C38E8955-A618-43EE-931F-71E84DC14161.png",
+        alt: "Mexican decoration",
+      };
+    };
     return null;
      }, [categoryList]);
 
