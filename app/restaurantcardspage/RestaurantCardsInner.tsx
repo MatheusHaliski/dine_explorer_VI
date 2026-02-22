@@ -203,6 +203,15 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
             };
             
         }
+      if (selectedCategory === "barbeque") {
+            return {
+                backgroundImage: 'url("/DD16FA97-1CD2-4A0C-A8CE-210FF81705F5_1_105_c.jpeg")',
+                backgroundPosition: "left top",
+                backgroundRepeat: "repeat",
+                backgroundSize: "220px 220px",
+            };
+            
+        }
         return undefined;
     }, [category]);
     
