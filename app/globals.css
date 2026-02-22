@@ -55,8 +55,7 @@ body {
   border-radius: 28px;
   padding: 24px;
   width: min(90vw, 460px);
-  min-height: 320px;
-  max-height: min(90vh, 360px);
+  min-height: 520px;
   box-sizing: border-box;
 }
 
