@@ -90,6 +90,7 @@ async function fetchRestaurantsByIds(ids: string[]): Promise<Restaurant[]> {
 
 export function RestaurantCardsInner() {
     const router = useRouter();
+    const newcomerAlertStoragePrefix = "restaurantcards_seen_newcomer_alert";
 
     const { firebaseApp } = firebaseAuthGate();
 
@@ -356,6 +357,20 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
         if (!token) {
             router.replace("/authview");
             return;
+        }
+
+        const profile = getAuthSessionProfile();
+        const userKey = profile.email?.trim().toLowerCase() || "anonymous";
+        const storageKey = `${newcomerAlertStoragePrefix}:${userKey}`;
+        const hasSeenNewcomerAlert =
+            typeof window !== "undefined" && window.localStorage.getItem(storageKey) === "1";
+
+        if (hasSeenNewcomerAlert) {
+            return;
+        }
+
+        if (typeof window !== "undefined") {
+            window.localStorage.setItem(storageKey, "1");
         }
 
         void VSModalPaged({
