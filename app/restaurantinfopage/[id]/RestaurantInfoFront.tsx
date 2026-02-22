@@ -125,12 +125,26 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
         .filter(Boolean);
   }, [restaurant.categories]);
 
-  const hasJapaneseCategory = useMemo(
-      () => categoryList.some((category) => category.toLowerCase() === "japanese"),
-      [categoryList]
-  );
-  const CARD =
-      "rounded-3xl border border-black/50 bg-white";
+  const categoryTrendingImage = useMemo(() => {
+    const normalized = categoryList.map((category) => category.toLowerCase());
+
+    if (normalized.includes("japanese")) {
+      return {
+        src: "/B269115E-1246-4965-A561-43E3603A146B_1_105_c.jpeg",
+        alt: "Japanese decoration",
+      };
+    }
+
+    if (normalized.includes("italian/pizza")) {
+      return {
+        src: "/14EDD76F-9F43-4D38-A1D0-8FA09D82B362_1_105_c.jpeg",
+        alt: "Italian decoration",
+      };
+    }
+
+    return null;
+  }, [categoryList]);
+
   const pageBackgroundStyle = useMemo(() => {
     const categoryKey = categoryList[0]?.trim().toLowerCase();
 
@@ -233,127 +247,92 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
       setReviewText("");
     } catch (err: unknown) {
       setSubmitError(
-          err instanceof Error ? err.message : "Unable to submit commentary."
+        err instanceof Error ? err.message : "Unable to submit commentary."
       );
     } finally {
       setSubmitting(false);
     }
   };
 
-return (
-  <div className="min-h-screen w-full text-black" style={pageBackgroundStyle}>
-    <div className="mx-auto max-w-6xl px-6 py-8">
-      {/* ===== HEADER ===== */}
-   <header className={[CARD, "relative mb-6"].join(" ")}>
-  
-  {/* GRID PRINCIPAL */}
-  <div className="grid gap-6 p-6 md:grid-cols-[300px_1fr]">
+  return (
+      <div className="min-h-screen w-full border-8 border-yellow-100 text-black" style={pageBackgroundStyle}>
+        <div className="mx-auto max-w-6xl border-8 border-yellow-100 px-6 py-8">
+          {/* ===== HEADER ===== */}
+          <header
+              className={[
+                "relative overflow-hidden rounded-3xl border border-white/18",
+                "bg-white/95 backdrop-blur-2xl mb-6",
+                FILTER_GLOW_LINE,
+              ].join(" ")}
+          >
+            <div className="relative grid gap-6 border-8 border-yellow-100 p-6 md:grid-cols-[300px_1fr]">
+              <div className="aspect-[4/3] overflow-hidden rounded-2xl border-8 border-yellow-100 bg-white">
+                {restaurant.photo ? (
+                    <img
+                        src={restaurant.photo}
+                        alt={restaurant.name ?? "Restaurant"}
+                        className="h-full w-full object-cover"
+                    />
+                ) : null}
+              </div>
 
-    {/* ===========================
-        COLUNA ESQUERDA → IMAGEM
-    =========================== */}
-    <div className="aspect-[4/3] overflow-hidden rounded-2xl bg-white">
-      {restaurant.photo && (
-        <img
-          src={restaurant.photo}
-          alt={restaurant.name ?? "Restaurant"}
-          className="h-full w-full object-cover"
-        />
-      )}
-    </div>
+              <div className="border-8 border-yellow-100">
+                <div className="flex flex-wrap items-start justify-between gap-4 border-8 border-yellow-100">
+                  <h1 className="text-3xl font-extrabold text-black">
+                    {restaurant.name}
+                  </h1>
 
-    {/* ===========================
-        COLUNA DIREITA → INFO
-    =========================== */}
-    <div className="flex flex-col gap-4">
+                  {categoryTrendingImage ? (
+                    <img
+                      src={categoryTrendingImage.src}
+                      alt={categoryTrendingImage.alt}
+                      className="h-20 w-20 rounded-xl border border-black/15 object-cover"
+                    />
+                  ) : null}
+                </div>
 
-      {/* NOME DO RESTAURANTE */}
-      <div className="inline-flex w-fit rounded-2xl border border-black/50 bg-white px-4 py-2">
-        <h1 className="text-3xl font-extrabold text-black">
-          {restaurant.name ?? "Restaurant"}
-        </h1>
-      </div>
+                <div className="mt-3 flex items-center gap-3 border-8 border-yellow-100">
+                  {flag && (
+                      <img
+                          src={flag.src}
+                          alt={flag.alt}
+                          className="h-6 w-9 rounded-md ring-1 ring-white/20"
+                      />
+                  )}
+                  <span className="font-semibold text-black/80">{locationLine}</span>
+                </div>
 
-      {/* ENDEREÇO + BANDEIRA */}
-      <div className="inline-flex items-center gap-3 rounded-2xl border border-black/50 bg-white px-4 py-2">
-        {flag && (
-          <img
-            src={flag.src}
-            alt={flag.alt}
-            className="h-6 w-9 rounded-md"
-          />
-        )}
-
-        <span className="font-semibold text-black/80">
-          {locationLine}
-        </span>
-      </div>
-
-      {/* AVALIAÇÃO (STARS) */}
-      <div className="inline-flex items-center gap-2 rounded-2xl border border-black/50 bg-white px-4 py-2">
-        <span className="text-amber-400 font-bold text-lg">
-          {"★".repeat(rounded)}
-        </span>
-
-        <span className="text-sm text-black/70">
-          {display.toFixed(1)} / 5
-        </span>
-      </div>
-
-    </div>
-
-  </div>
-</header>
-
-      {/* ===== OPTIONAL DECOR IMAGE ===== */}
-      {hasJapaneseCategory ? (
-        <div className={[CARD, "p-4 mb-6"].join(" ")}>
-        <img
-  src="/B269115E-1246-4965-A561-43E3603A146B_1_105_c.jpeg"
-  alt="Japanese decoration"
-  className="h-full w-full rounded-2xl border border-black/50 object-cover"
-/>
-        </div>
-      ) : null}
-
-      <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-        {/* ===== CATEGORIES ===== */}
-        <div className={[CARD, "p-6 shadow-sm"].join(" ")}>
-          <h2 className="text-xl font-extrabold text-black">
-            Restaurant categories
-          </h2>
-
-          {categoryList.length === 0 ? (
-            <p className="mt-3 text-black/70">No categories available.</p>
-          ) : (
-            <div className="mt-4 flex flex-wrap gap-3">
-              {categoryList.map((category) => (
-                <span
-                  key={category}
-                  className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-black/90"
-                >
-                  <span aria-hidden="true">{getCategoryIcon(category).src}</span>
-                  <span>{category}</span>
+                <div className="mt-4 inline-flex items-center gap-2 rounded-2xl border-8 border-yellow-100 bg-white px-4 py-2">
+                <span className="text-amber-400 font-bold text-lg">
+                  {"★".repeat(rounded)}
+                </span>
+                  <span className="text-sm text-black/70">
+                  {display.toFixed(1)} / 5
                 </span>
               ))}
             </div>
-          )}
-        </div>
+          </header>
 
-        {/* ===== MAP ===== */}
-        <div className={[CARD, "p-6 shadow-sm"].join(" ")}>
-          <h2 className="text-xl font-extrabold text-black">Mini map</h2>
-
-          {locationLine ? (
-            <div className="mt-4 overflow-hidden rounded-3xl border border-black/50">
-              <iframe
-                title="Restaurant location map"
-                src={`https://www.google.com/maps?q=${encodeURIComponent(
-                  locationLine
-                )}&output=embed`}
-                className="h-56 w-full"
-                loading="lazy"
-              />
+          <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+            <div className="rounded-3xl border-8 border-yellow-100 bg-white p-6 shadow-sm">
+              <h2 className="text-xl font-extrabold text-black">
+                Restaurant categories
+              </h2>
+              {categoryList.length === 0 ? (
+                  <p className="mt-3 text-black/70">No categories available.</p>
+              ) : (
+                  <div className="mt-4 flex flex-wrap gap-3 border-8 border-yellow-100">
+                    {categoryList.map((category) => (
+                        <span
+                            key={category}
+                            className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-semibold text-black/90"
+                        >
+                    <span aria-hidden="true">{getCategoryIcon(category).src}</span>
+                    <span>{category}</span>
+                  </span>
+                    ))}
+                  </div>
+              )}
             </div>
           ) : (
             <p className="mt-3 text-black/70">No address available.</p>
@@ -375,66 +354,17 @@ return (
           </div>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="mt-6 grid gap-4 rounded-2xl border border-black/50 bg-white p-4"
-        >
-          <div className="grid gap-2">
-            <label className="text-sm font-semibold text-black/80" htmlFor="rating">
-              Rating
-            </label>
-            <select
-              id="rating"
-              value={reviewRating}
-              onChange={(event) => setReviewRating(Number(event.target.value))}
-              className="rounded-xl border border-black/10 bg-white px-3 py-2 text-black"
-            >
-              {[0, 1, 2, 3, 4, 5].map((value) => (
-                <option key={value} value={value}>
-                  {value} star{value === 1 ? "" : "s"}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="grid gap-2">
-            <label className="text-sm font-semibold text-black/80" htmlFor="commentary">
-              Your commentary
-            </label>
-            <textarea
-              id="commentary"
-              value={reviewText}
-              onChange={(event) => setReviewText(event.target.value)}
-              rows={4}
-              placeholder="Share your thoughts about this restaurant..."
-              className="rounded-xl border border-black/10 bg-white px-3 py-2 text-black"
-            />
-          </div>
-
-          {submitError ? (
-            <div className="text-sm text-red-600">{submitError}</div>
-          ) : null}
-
-          <button
-            disabled={submitting}
-            className="w-full rounded-xl border border-black/15 bg-black px-4 py-2 font-semibold text-white hover:bg-black/85 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {submitting ? "Submitting..." : "Submit commentary"}
-          </button>
-        </form>
-
-        {latestReviews.length === 0 ? (
-          <p className="mt-6 text-black/70">No commentary yet.</p>
-        ) : (
-          <ul className="mt-6 space-y-4">
-            {latestReviews.map((review) => (
-              <li key={review.id} className={[CARD, "p-4"].join(" ")}>
-                <div className="flex items-center gap-3">
-                  {review.userPhoto ? (
-                    <img
-                      src={review.userPhoto}
-                      className="h-10 w-10 rounded-full object-cover"
-                      alt=""
+            <div className="rounded-3xl border-8 border-yellow-100 bg-white p-6 shadow-sm">
+              <h2 className="text-xl font-extrabold text-black">Mini map</h2>
+              {locationLine ? (
+                  <div className="mt-4 overflow-hidden rounded-2xl border-8 border-yellow-100">
+                    <iframe
+                        title="Restaurant location map"
+                        src={`https://www.google.com/maps?q=${encodeURIComponent(
+                            locationLine
+                        )}&output=embed`}
+                        className="h-56 w-full"
+                        loading="lazy"
                     />
                   ) : null}
 
@@ -448,17 +378,108 @@ return (
                       )}
                     </div>
                   </div>
-                </div>
+              ) : (
+                  <p className="mt-3 text-black/70">No address available.</p>
+              )}
+            </div>
+          </section>
 
-                <p className="mt-3 text-sm text-black/80">
-                  {review.text ?? "No comment"}
+          {/* ===== REVIEWS ===== */}
+          <section className="mt-6 rounded-3xl border border-black/10 bg-white p-6 shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-8 border-yellow-100">
+              <div className="border-8 border-yellow-100">
+                <h2 className="text-xl font-extrabold text-black">Commentary</h2>
+                <p className="mt-1 text-black/70 text-sm">
+                  Share your latest thoughts and read the newest updates.
                 </p>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-    </div>
-  </div>
-);
+              </div>
+              <div className="border-8 border-yellow-100 text-sm text-black/60">
+                {latestReviews.length} comment{latestReviews.length === 1 ? "" : "s"}
+              </div>
+            </div>
+
+            <form
+                onSubmit={handleSubmit}
+                className="mt-6 grid gap-4 rounded-2xl border border-black/10 bg-white p-4"
+            >
+              <div className="grid gap-2 border-8 border-yellow-100">
+                <label className="text-sm font-semibold text-black/80" htmlFor="rating">
+                  Rating
+                </label>
+                <select
+                    id="rating"
+                    value={reviewRating}
+                    onChange={(event) => setReviewRating(Number(event.target.value))}
+                    className="rounded-xl border border-black/10 bg-white px-3 py-2 text-black"
+                >
+                  {[0, 1, 2, 3, 4, 5].map((value) => (
+                      <option key={value} value={value}>
+                        {value} star{value === 1 ? "" : "s"}
+                      </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid gap-2 border-8 border-yellow-100">
+                <label className="text-sm font-semibold text-black/80" htmlFor="commentary">
+                  Your commentary
+                </label>
+                <textarea
+                    id="commentary"
+                    value={reviewText}
+                    onChange={(event) => setReviewText(event.target.value)}
+                    rows={4}
+                    placeholder="Share your thoughts about this restaurant..."
+                    className="rounded-xl border border-black/10 bg-white px-3 py-2 text-black"
+                />
+              </div>
+
+              {submitError ? <div className="border-8 border-yellow-100 text-sm text-red-300">{submitError}</div> : null}
+
+              <button
+                  disabled={submitting}
+                  className="w-full rounded-xl border border-black/15 bg-black px-4 py-2 font-semibold text-white hover:bg-black/85 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {submitting ? "Submitting..." : "Submit commentary"}
+              </button>
+            </form>
+
+            {latestReviews.length === 0 ? (
+                <p className="mt-6 text-black/70">No commentary yet.</p>
+            ) : (
+                <ul className="mt-6 space-y-4">
+                  {latestReviews.map((review) => (
+                      <li
+                          key={review.id}
+                          className="rounded-2xl border border-black/12 bg-white p-4"
+                      >
+                        <div className="flex items-center gap-3 border-8 border-yellow-100">
+                          {review.userPhoto && (
+                              <img
+                                  src={review.userPhoto}
+                                  className="h-10 w-10 rounded-full object-cover"
+                                  alt=""
+                              />
+                          )}
+                          <div className="border-8 border-yellow-100">
+                            <div className="border-8 border-yellow-100 font-semibold">
+                              {review.userDisplayName ?? "Anonymous"}
+                            </div>
+                            <div className="border-8 border-yellow-100 text-amber-400 text-sm">
+                              {"★".repeat(
+                                  Math.round(parseRatingValue(review.rating ?? review.grade ?? 0))
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <p className="mt-3 text-sm text-black/80">{review.text ?? "No comment"}</p>
+                      </li>
+                  ))}
+                </ul>
+            )}
+          </section>
+        </div>
+      </div>
+  );
 }
