@@ -169,7 +169,7 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
         }
     if (selectedCategory === "chicken shop") {
             return {
-                backgroundImage: 'url("/B4C43DA3-9F25-40F0-B391-E19508569A66.png")',
+                backgroundImage: 'url("/1823E80A-4EDD-4EBC-B510-88775C2D57B1.png")',
                 backgroundPosition: "left top",
                 backgroundRepeat: "repeat",
                 backgroundSize: "220px 220px",
