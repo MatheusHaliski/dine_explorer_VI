@@ -160,7 +160,7 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
         }
       if (selectedCategory === "italian/pizza") {
             return {
-                backgroundImage: 'url("/30CDB1E0-5AEF-495A-A02A-4280DB2EF1DD.png")',
+                backgroundImage: 'url("/9C5C070B-47CE-4043-A29D-506AE19535FA.png")',
                 backgroundPosition: "left top",
                 backgroundRepeat: "repeat",
                 backgroundSize: "220px 220px",
