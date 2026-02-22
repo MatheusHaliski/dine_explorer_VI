@@ -141,7 +141,12 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
         src: "/14EDD76F-9F43-4D38-A1D0-8FA09D82B362_1_105_c.jpeg",
         alt: "Italian decoration",
       };
-    }
+    if (normalized.includes("mexican")) {
+       return {
+        src: "/EC63D6FD-20F1-4963-87B1-9BCD7CA8A373.jpeg",
+        alt: "Mexican decoration",
+      };
+    };
 
     return null;
   }, [categoryList]);
