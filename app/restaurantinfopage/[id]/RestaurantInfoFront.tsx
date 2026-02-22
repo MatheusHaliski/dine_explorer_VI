@@ -244,58 +244,64 @@ return (
   <div className="min-h-screen w-full text-black" style={pageBackgroundStyle}>
     <div className="mx-auto max-w-6xl px-6 py-8">
       {/* ===== HEADER ===== */}
-   <header
-  className={[
-    CARD,
-    "relative overflow-hidden mb-6",
-  ].join(" ")}
->
-  <div className="relative grid gap-6 p-6 md:grid-cols-[300px_1fr]">
+   <header className={[CARD, "relative mb-6"].join(" ")}>
+  
+  {/* GRID PRINCIPAL */}
+  <div className="grid gap-6 p-6 md:grid-cols-[300px_1fr]">
 
-    {/* IMAGE */}
+    {/* ===========================
+        COLUNA ESQUERDA → IMAGEM
+    =========================== */}
     <div className="aspect-[4/3] overflow-hidden rounded-2xl bg-white">
-      {restaurant.photo ? (
+      {restaurant.photo && (
         <img
           src={restaurant.photo}
           alt={restaurant.name ?? "Restaurant"}
           className="h-full w-full object-cover"
         />
-      ) : null}
+      )}
     </div>
 
-    {/* INFO */}
-    <div className="flex flex-col justify-between">
+    {/* ===========================
+        COLUNA DIREITA → INFO
+    =========================== */}
+    <div className="flex flex-col gap-4">
 
-      {/* NAME */}
-      <h1 className="text-3xl font-extrabold text-black">
-        {restaurant.name ?? "Restaurant"}
-      </h1>
+      {/* NOME DO RESTAURANTE */}
+      <div className="inline-flex w-fit rounded-2xl border border-black/50 bg-white px-4 py-2">
+        <h1 className="text-3xl font-extrabold text-black">
+          {restaurant.name ?? "Restaurant"}
+        </h1>
+      </div>
 
-      {/* LOCATION */}
-      <div className="mt-2 flex items-center gap-3">
+      {/* ENDEREÇO + BANDEIRA */}
+      <div className="inline-flex items-center gap-3 rounded-2xl border border-black/50 bg-white px-4 py-2">
         {flag && (
           <img
             src={flag.src}
             alt={flag.alt}
-            className="h-6 w-9 rounded-md ring-1 ring-white/20"
+            className="h-6 w-9 rounded-md"
           />
         )}
+
         <span className="font-semibold text-black/80">
           {locationLine}
         </span>
       </div>
 
-      {/* STARS */}
-      <div className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-black/50 bg-white px-4 py-2">
+      {/* AVALIAÇÃO (STARS) */}
+      <div className="inline-flex items-center gap-2 rounded-2xl border border-black/50 bg-white px-4 py-2">
         <span className="text-amber-400 font-bold text-lg">
           {"★".repeat(rounded)}
         </span>
+
         <span className="text-sm text-black/70">
           {display.toFixed(1)} / 5
         </span>
       </div>
 
     </div>
+
   </div>
 </header>
 
