@@ -258,60 +258,53 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
       <div className="min-h-screen w-full border-8 border-yellow-100 text-black" style={pageBackgroundStyle}>
         <div className="mx-auto max-w-6xl border-8 border-yellow-100 px-6 py-8">
           {/* ===== HEADER ===== */}
-          <header
-              className={[
-                "relative overflow-hidden rounded-3xl border border-white/18",
-                "bg-white/95 backdrop-blur-2xl mb-6",
-                FILTER_GLOW_LINE,
-              ].join(" ")}
-          >
-            <div className="relative grid gap-6 border-8 border-yellow-100 p-6 md:grid-cols-[300px_1fr]">
-              <div className="aspect-[4/3] overflow-hidden rounded-2xl border-8 border-yellow-100 bg-white">
-                {restaurant.photo ? (
-                    <img
-                        src={restaurant.photo}
-                        alt={restaurant.name ?? "Restaurant"}
-                        className="h-full w-full object-cover"
-                    />
-                ) : null}
-              </div>
+          <header className={[CARD, "relative mb-6"].join(" ")}>
+  <div className="grid gap-6 p-6 md:grid-cols-[300px_1fr]">
+    {/* COLUNA ESQUERDA → IMAGEM */}
+    <div className="aspect-[4/3] overflow-hidden rounded-2xl bg-white">
+      {restaurant.photo ? (
+        <img
+          src={restaurant.photo}
+          alt={restaurant.name ?? "Restaurant"}
+          className="h-full w-full object-cover"
+        />
+      ) : null}
+    </div>
 
-              <div className="border-8 border-yellow-100">
-                <div className="flex flex-wrap items-start justify-between gap-4 border-8 border-yellow-100">
-                  <h1 className="text-3xl font-extrabold text-black">
-                    {restaurant.name}
-                  </h1>
+    {/* COLUNA DIREITA → INFO */}
+    <div className="flex flex-col gap-4">
+      {/* NOME */}
+      <div className="inline-flex w-fit rounded-2xl border border-black/50 bg-white px-4 py-2">
+        <h1 className="text-3xl font-extrabold text-black">
+          {restaurant.name ?? "Restaurant"}
+        </h1>
+      </div>
 
-                  {categoryTrendingImage ? (
-                    <img
-                      src={categoryTrendingImage.src}
-                      alt={categoryTrendingImage.alt}
-                      className="h-20 w-20 rounded-xl border border-black/15 object-cover"
-                    />
-                  ) : null}
-                </div>
+      {/* ENDEREÇO + BANDEIRA */}
+      <div className="inline-flex items-center gap-3 rounded-2xl border border-black/50 bg-white px-4 py-2">
+        {flag ? (
+          <img
+            src={flag.src}
+            alt={flag.alt}
+            className="h-6 w-9 rounded-md"
+          />
+        ) : null}
 
-                <div className="mt-3 flex items-center gap-3 border-8 border-yellow-100">
-                  {flag && (
-                      <img
-                          src={flag.src}
-                          alt={flag.alt}
-                          className="h-6 w-9 rounded-md ring-1 ring-white/20"
-                      />
-                  )}
-                  <span className="font-semibold text-black/80">{locationLine}</span>
-                </div>
+        <span className="font-semibold text-black/80">{locationLine}</span>
+      </div>
 
-                <div className="mt-4 inline-flex items-center gap-2 rounded-2xl border-8 border-yellow-100 bg-white px-4 py-2">
-                <span className="text-amber-400 font-bold text-lg">
-                  {"★".repeat(rounded)}
-                </span>
-                  <span className="text-sm text-black/70">
-                  {display.toFixed(1)} / 5
-                </span>
-              ))}
-            </div>
-          </header>
+      {/* STARS + NOTA */}
+      <div className="inline-flex items-center gap-2 rounded-2xl border border-black/50 bg-white px-4 py-2">
+        <span className="text-amber-400 font-bold text-lg">
+          {"★".repeat(rounded)}
+        </span>
+        <span className="text-sm text-black/70">
+          {display.toFixed(1)} / 5
+        </span>
+      </div>
+    </div>
+  </div>
+</header>
 
           <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
             <div className="rounded-3xl border-8 border-yellow-100 bg-white p-6 shadow-sm">
