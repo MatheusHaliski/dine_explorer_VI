@@ -671,6 +671,7 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                         "bg-white",
                         "text-amber-500",
                         "border-amber-300",
+                        "border-4",
                         GLOW_LINE,
                         "shadow-[0_18px_60px_rgba(0,0,0,0.25)]",
                     ].join(" ")}>
