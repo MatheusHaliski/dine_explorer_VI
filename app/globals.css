@@ -61,8 +61,8 @@ body {
 }
 
 .vs-auth-alert-html {
-  margin: 0;
-  padding: 0;
+  margin: 40;
+  padding-bottom: 40;
 }
 
 .vs-auth-alert-inner {
