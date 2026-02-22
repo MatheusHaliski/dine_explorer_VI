@@ -26,6 +26,7 @@ import {
 
 import { SearchSelect } from "@/app/restaurantcardspage/selectelement";
 import { firebaseAuthGate } from "@/app/gate/firebaseClient";
+import { VSModalPaged } from "@/app/lib/authAlerts";
 import {
     FOOD_CATEGORIES,
     getCategoryIcon,
@@ -357,6 +358,18 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
             return;
         }
     }, [router]);
+
+    useEffect(() => {
+        void VSModalPaged({
+            title: "Alert",
+            messages: [
+                "Click on an image to see restaurant details. Use the filters to enhance your experience.",
+            ],
+            tone: "success",
+            confirmText: "Ok",
+        });
+    }, []);
+
     useEffect(() => {
         const token1 = getAuthSessionToken();
     })
