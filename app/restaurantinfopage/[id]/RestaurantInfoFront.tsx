@@ -241,16 +241,16 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
 
   return (
       <div className="min-h-screen w-full text-black" style={pageBackgroundStyle}>
-        <div className="mx-auto max-w-6xl border-8 border-black/20 px-6 py-8">
+        <div className="mx-auto max-w-6xl border-8 px-6 py-8">
           {/* ===== HEADER ===== */}
           <header
               className={[
-                "relative overflow-hidden rounded-3xl border border-white/18",
+                "relative overflow-hidden rounded-3xl border border-black/50",
                 "bg-white/95 backdrop-blur-2xl mb-6",
                 FILTER_GLOW_LINE,
               ].join(" ")}
           >
-            <div className="relative grid gap-6 border-8 p-6 md:grid-cols-[300px_1fr]">
+            <div className="relative grid gap-6 border-4 p-6 md:grid-cols-[300px_1fr]">
               <div className="aspect-[4/3] overflow-hidden rounded-2xl border-8 bg-white">
                 {restaurant.photo ? (
                     <img
@@ -261,22 +261,7 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
                 ) : null}
               </div>
 
-              <div className="border-8 ">
-                <div className="flex flex-wrap items-start justify-between gap-4 border-8 border-yellow-100">
-                  <h1 className="text-3xl font-extrabold text-black">
-                    {restaurant.name}
-                  </h1>
-
-                  {hasJapaneseCategory ? (
-                    <img
-                      src="/B269115E-1246-4965-A561-43E3603A146B_1_105_c.jpeg"
-                      alt="Japanese decoration"
-                      className="h-320 w-320 rounded-xl border border-black/15 object-cover"
-                    />
-                  ) : null}
-                </div>
-
-                <div className="mt-3 flex items-center gap-3 border-8 ">
+                <div className="mt-3 flex items-center gap-3 border-4 ">
                   {flag && (
                       <img
                           src={flag.src}
@@ -298,9 +283,17 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
               </div>
             </div>
           </header>
-
+                <div className="flex flex-wrap rounded-3xl items-start border-4 justify-between gap-4 border-black/50 ">
+                  {hasJapaneseCategory ? (
+                    <img
+                      src="/B269115E-1246-4965-A561-43E3603A146B_1_105_c.jpeg"
+                      alt="Japanese decoration"
+                      className="h-320 w-320 rounded-xl border border-black/50 object-cover"
+                    />
+                  ) : null}
+                </div>
           <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="rounded-3xl border-8 border-black/20 bg-white p-6 shadow-sm">
+            <div className="rounded-3xl border-4 border-black/50 bg-white p-6 shadow-sm">
               <h2 className="text-xl font-extrabold text-black">
                 Restaurant categories
               </h2>
@@ -321,10 +314,10 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
               )}
             </div>
 
-            <div className="rounded-3xl border-8  bg-white p-6 shadow-sm">
+            <div className="rounded-3xl border-4 border-black/50  bg-white p-6 shadow-sm">
               <h2 className="text-xl font-extrabold text-black">Mini map</h2>
               {locationLine ? (
-                  <div className="mt-4 overflow-hidden rounded-2xl border-8 ">
+                  <div className="mt-4 overflow-hidden rounded-3xl border-4 border-black/50 ">
                     <iframe
                         title="Restaurant location map"
                         src={`https://www.google.com/maps?q=${encodeURIComponent(
