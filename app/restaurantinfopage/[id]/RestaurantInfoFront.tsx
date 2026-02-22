@@ -309,8 +309,7 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
                   <span className="text-sm text-black/70">
                   {display.toFixed(1)} / 5
                 </span>
-                </div>
-              </div>
+              ))}
             </div>
           </header>
 
@@ -335,6 +334,25 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
                   </div>
               )}
             </div>
+          ) : (
+            <p className="mt-3 text-black/70">No address available.</p>
+          )}
+        </div>
+      </section>
+
+      {/* ===== REVIEWS ===== */}
+      <section className={[CARD, "mt-6 p-6 shadow-sm"].join(" ")}>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-extrabold text-black">Commentary</h2>
+            <p className="mt-1 text-black/70 text-sm">
+              Share your latest thoughts and read the newest updates.
+            </p>
+          </div>
+          <div className="text-sm text-black/60">
+            {latestReviews.length} comment{latestReviews.length === 1 ? "" : "s"}
+          </div>
+        </div>
 
             <div className="rounded-3xl border-8 border-yellow-100 bg-white p-6 shadow-sm">
               <h2 className="text-xl font-extrabold text-black">Mini map</h2>
@@ -348,6 +366,17 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
                         className="h-56 w-full"
                         loading="lazy"
                     />
+                  ) : null}
+
+                  <div>
+                    <div className="font-semibold">
+                      {review.userDisplayName ?? "Anonymous"}
+                    </div>
+                    <div className="text-amber-400 text-sm">
+                      {"★".repeat(
+                        Math.round(parseRatingValue(review.rating ?? review.grade ?? 0))
+                      )}
+                    </div>
                   </div>
               ) : (
                   <p className="mt-3 text-black/70">No address available.</p>

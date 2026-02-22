@@ -55,14 +55,13 @@ body {
   border-radius: 28px;
   padding: 24px;
   width: min(90vw, 460px);
-  min-height: 220px;
-  max-height: min(90vh, 360px);
+  min-height: 520px;
   box-sizing: border-box;
 }
 
 .vs-auth-alert-html {
   margin: 0;
-  padding: 0;
+  padding-bottom: 0;
 }
 
 .vs-auth-alert-inner {
@@ -98,7 +97,7 @@ body {
 }
 
 .vs-auth-alert-button {
-  margin-top: 12px;
+  margin-top: 0px;
   border-radius: 999px;
   padding: 5px 14px;
   font-weight: 700;
@@ -108,10 +107,16 @@ body {
   color: #ea580c;
   border: 2px solid #facc15;
   box-shadow: 0 10px 20px rgba(234, 88, 12, 0.2);
+  max-width: 100%;
 }
 
 .vs-auth-alert-button:hover {
   background: #fff7ed;
+}
+
+.swal2-popup.vs-auth-alert-popup .swal2-actions {
+  margin-bottom: 12px 0 0;
+  padding: 0;
 }
 .vs-auth-alert-text{
   color:orange;
