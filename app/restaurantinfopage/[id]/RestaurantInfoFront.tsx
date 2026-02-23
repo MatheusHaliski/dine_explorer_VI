@@ -162,7 +162,7 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
     };
      if (normalized.includes("açai & bowls")) {
        return {
-        src: "/0972126C-ABF5-4E17-B052-AD50C4F3CAC0.png",
+        src: "/Firefly_Flux_CONSEGUE mudar a vestimenta do chef para usar touca roxa e colocar mais detalhes de a 635104.jpg",
         alt: "açai & bowls decoration",
       };
     };
