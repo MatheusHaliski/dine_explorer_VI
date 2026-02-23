@@ -144,7 +144,7 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
     };
     if (normalized.includes("mexican")) {
        return {
-        src: "/EC63D6FD-20F1-4963-87B1-9BCD7CA8A373.jpeg",
+        src: "/Firefly_Flux_Consegue retirar os fornos atras do homem de chapeu e inserir tabuas de nachos, guaca 349340.jpg",
         alt: "Mexican decoration",
       };
     };
@@ -190,6 +190,7 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
         alt: "Argentine decoration",
       };
     };
+    
     return null;
      }, [categoryList]);
 
