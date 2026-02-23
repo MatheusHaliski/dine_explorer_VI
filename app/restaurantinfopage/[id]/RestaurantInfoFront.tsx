@@ -181,7 +181,7 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
       if (normalized.includes("argentine")) {
        return {
         src: "/60E7FCD8-D92C-49FF-A9D9-53EFF9737671.png",
-        alt: "Arabic decoration",
+        alt: "Argentine decoration",
       };
     };
     return null;
