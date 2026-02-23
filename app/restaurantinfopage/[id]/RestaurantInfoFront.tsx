@@ -197,6 +197,12 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
         alt: "Argentine decoration",
       };
     };
+             if (normalized.includes("bar")) {
+       return {
+        src: "/ChatGPT Image 23 de fev. de 2026, 11_20_17.png",
+        alt: "Argentine decoration",
+      };
+    };
     return null;
      }, [categoryList]);
 
