@@ -172,6 +172,12 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
         alt: "Arabic decoration",
       };
     };
+      if (normalized.includes("bakery/cafe")) {
+       return {
+        src: "/9E143867-75FF-4C66-818F-E84B5465ADBC.pngg",
+        alt: "Arabic decoration",
+      };
+    };
     return null;
      }, [categoryList]);
 
