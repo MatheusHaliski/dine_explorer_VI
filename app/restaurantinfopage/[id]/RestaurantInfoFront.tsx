@@ -160,6 +160,12 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
         alt: "Mexican decoration",
       };
     };
+     if (normalized.includes("açai & bowls")) {
+       return {
+        src: "/B7AD59BE-612C-45FB-A621-34BECFC8669D.png",
+        alt: "Mexican decoration",
+      };
+    };
     return null;
      }, [categoryList]);
 
