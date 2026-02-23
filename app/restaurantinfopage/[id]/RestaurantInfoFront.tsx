@@ -184,6 +184,12 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
         alt: "Argentine decoration",
       };
     };
+          if (normalized.includes("sandwich shop")) {
+       return {
+        src: "/Firefly_GeminiFlash_Consegue gerar a mesma imagem porém com a seguinte tematica- Sandwich Shop- 998742.png",
+        alt: "Argentine decoration",
+      };
+    };
     return null;
      }, [categoryList]);
 
