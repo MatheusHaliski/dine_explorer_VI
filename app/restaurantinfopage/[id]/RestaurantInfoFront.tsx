@@ -205,7 +205,7 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
     };
     if (normalized.includes("chicken shop")) {
        return {
-        src: "/ChatGPT Image 23 de fev. de 2026, 11_20_17.png",
+        src: "/ChatGPT Image 28 de fev. de 2026, 14_11_26.png",
         alt: "Chicken decoration",
       };
     };
