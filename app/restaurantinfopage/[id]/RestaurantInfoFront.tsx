@@ -203,6 +203,18 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
         alt: "Argentine decoration",
       };
     };
+    if (normalized.includes("chicken shop")) {
+       return {
+        src: "/ChatGPT Image 23 de fev. de 2026, 11_20_17.png",
+        alt: "Chicken decoration",
+      };
+    };
+    if (normalized.includes("grocery")) {
+       return {
+        src: "/ChatGPT Image 28 de fev. de 2026, 14_11_29.png",
+        alt: "Chicken decoration",
+      };
+    };
     if (normalized.includes("casual/local") && countryName.trim().toLowerCase() === "usa") {
       return {
         src: "/Sem título - 19 de fevereiro de 2026 às 19.15.50 (8).PNG",
