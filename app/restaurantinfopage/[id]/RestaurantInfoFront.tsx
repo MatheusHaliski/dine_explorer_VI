@@ -130,7 +130,7 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
     const normalized = categoryList.map((category) => category.toLowerCase());
     const restaurantName = (restaurant.name ?? "").trim().toLowerCase();
 
-    if (restaurantName === "chick-fill-a") {
+    if (restaurantName.trim().toLowerCase() === "chick-fill-a") {
       return {
         src: "/0586AF72-0F8A-4EAC-A697-9C408C658DAD.png",
         alt: "Chick-fill-A decoration",
@@ -140,6 +140,13 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
     if (normalized.includes("japanese")) {
       return {
         src: "/B269115E-1246-4965-A561-43E3603A146B_1_105_c.jpeg",
+        alt: "Japanese decoration",
+      };
+    };
+
+    if (normalized.includes("chicken shop")) {
+      return {
+        src: "/ChatGPT Image 28 de fev. de 2026, 14_11_26.png",
         alt: "Japanese decoration",
       };
     };
