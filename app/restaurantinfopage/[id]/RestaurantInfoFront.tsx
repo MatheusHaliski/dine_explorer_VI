@@ -203,9 +203,9 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
         alt: "Argentine decoration",
       };
     };
-    if (normalized.includes("chicken shop")) {
+    if (normalized.includes("chicken shop"))  {
        return {
-        src: "/ChatGPT Image 28 de fev. de 2026, 14_11_26.png",
+        src: "/DB00C326-E99C-4D0A-91BE-C9A3A63E8719.png",
         alt: "Chicken decoration",
       };
     };
