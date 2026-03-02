@@ -227,7 +227,7 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
         if (normalized.includes("casual/local") && countryName.trim().toLowerCase() === "brasil") {
       return {
         src: "/capbrasil2.jpg",
-        alt: "Casual local USA decoration",
+        alt: "Casual local BR decoration",
       };
     }
     
