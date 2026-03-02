@@ -224,6 +224,13 @@ export default function RestaurantInfoFront({ restaurant, reviews }: Props) {
         alt: "Casual local USA decoration",
       };
     }
+        if (normalized.includes("casual/local") && countryName.trim().toLowerCase() === "brasil") {
+      return {
+        src: "/capbrasil2.jpg",
+        alt: "Casual local USA decoration",
+      };
+    }
+    
     return null;
      }, [categoryList, countryName, restaurant.name]);
 
