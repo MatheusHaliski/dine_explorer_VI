@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-
+import { consumeRateLimit, resolveClientIp } from "@/app/lib/security/basicRateLimit";
+import { getAuth } from "firebase-admin/auth";
+import {getAdminFirestore} from "@/app/lib/firebaseAdmin";
 
 const COOKIE_NAME = "restaurantcards_pin";
-
+const TOKEN_TTL_MS = 1000 * 60 * 15;
+const ALLOWED_GOOGLE_EMAIL = "matheushaliski@gmail.com";
+const PIN_VERIFY_LIMIT_MAX = Number(process.env.PIN_VERIFY_RATE_LIMIT_MAX ?? "6");
+const PIN_VERIFY_LIMIT_WINDOW_MS = Number(
+    process.env.PIN_VERIFY_RATE_LIMIT_WINDOW_MS ?? "60000"
+);
 const json = (payload: Record<string, unknown>, status: number) =>
     NextResponse.json(payload, { status });
 
@@ -42,7 +49,65 @@ export function verifyToken(token: string, secret: string) {
 
   return true;
 }
+const verifyAllowedGoogleIdentity = async (
+    request: NextRequest
+): Promise<{ ok: true; email: string } | { ok: false; response: Response }> => {
+    const authorization = request.headers.get("authorization") ?? "";
+    const bearerPrefix = "Bearer ";
 
+    if (!authorization.startsWith(bearerPrefix)) {
+        return {
+            ok: false,
+            response: json(
+                { error: "Missing Firebase auth token." },
+                401
+            ),
+        };
+    }
+
+    const idToken = authorization.slice(bearerPrefix.length).trim();
+    if (!idToken) {
+        return {
+            ok: false,
+            response: json(
+                { error: "Missing Firebase auth token." },
+                401
+            ),
+        };
+    }
+
+    try {
+        getAdminFirestore();
+        const decoded = await getAuth().verifyIdToken(idToken);
+        const email = decoded.email?.toLowerCase() ?? "";
+
+        if (!email) {
+            return {
+                ok: false,
+                response: json({ error: "Unable to verify account email." }, 403),
+            };
+        }
+
+        if (email !== ALLOWED_GOOGLE_EMAIL) {
+            return {
+                ok: false,
+                response: json(
+                    { error: `Only ${ALLOWED_GOOGLE_EMAIL} is allowed.` },
+                    403
+                ),
+            };
+        }
+
+        return { ok: true, email };
+    } catch (error) {
+        console.error("[PIN API] Firebase token verification failed:", error);
+        const message = error instanceof Error ? error.message : "Unknown error";
+        return {
+            ok: false,
+            response: json({ error: `Invalid Firebase auth token. ${message}` }, 401),
+        };
+    }
+};
 // Monta header Set-Cookie
 export function buildSetCookie(value: string) {
   const parts = [
@@ -74,8 +139,11 @@ function buildClearCookie() {
 
 
 export async function POST(request: NextRequest): Promise<Response> {
-
-    const hash = "$2a$12$vYtjBSo3ovuK3kGMpDwkHu.YzZV1FAhoOVnzsA5RVWBt1Um6hptr2";
+    const identity = await verifyAllowedGoogleIdentity(request);
+    if (!identity.ok) {
+        return identity.response;
+    }
+    const hash = "$2a$12$Ed2uGOx6hQnhxrJxIw29/.5wjQ.Zpt8LON8plL1R8lLXPqeL8Hd1C";
     console.log(hash);
     const secret = process.env.PIN_COOKIE_SECRET;
     console.log(secret);
@@ -93,6 +161,25 @@ export async function POST(request: NextRequest): Promise<Response> {
 
 
     if (!pin) return json({ ok: false, error: "PIN is required." }, 400);
+    const clientIp = resolveClientIp(request);
+    const rateLimit = consumeRateLimit({
+        namespace: "pin-verify",
+        key: `${clientIp}:${identity.email}`,
+        maxRequests: PIN_VERIFY_LIMIT_MAX,
+        windowMs: PIN_VERIFY_LIMIT_WINDOW_MS,
+    });
+
+    if (!rateLimit.allowed) {
+        const response = json(
+            {
+                ok: false,
+                error: "Too many PIN attempts. Please try again shortly.",
+            },
+            429
+        );
+        response.headers.set("Retry-After", String(rateLimit.retryAfterSeconds));
+        return response;
+    }
 
     const matches = await bcrypt.compare(pin, hash);
     if (!matches) {
