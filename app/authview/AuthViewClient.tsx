@@ -18,7 +18,7 @@ export default function AuthViewClient() {
     let [devsessiontoken] = useState("");
     const pathname = usePathname();
     useEffect(() => {
-        const t = getDevSessionToken();
+        const t = getAuthSessionToken();
         if (!t) {
             router.replace("/");
             return;
