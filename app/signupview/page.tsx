@@ -4,8 +4,10 @@ import AuthShell2 from "../components/AuthShell2";
 import SignupForm from "./SignupForm";
 import {clearAuthSessionToken, setAuthSessionProfile, setAuthSessionToken} from "@/app/lib/authSession";
 import { getDevSessionToken,setDevSessionToken } from "@/app/lib/devSession";
+import {usePathname, useRouter} from "next/navigation";
 export default function SignupViewPage() {
-     useEffect(() => {
+     const pathname = usePathname();
+    useEffect(() => {
         const t = getDevSessionToken();
         if (!t) {
             router.replace("/");
@@ -14,7 +16,7 @@ export default function SignupViewPage() {
     }, [router]);
 
     useEffect(() => {
-        if (pathname !== "/signupview") return;
+        if (pathname !== "/authview") return;
         clearAuthSessionToken();
     }, [pathname]);
     return (
