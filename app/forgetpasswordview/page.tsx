@@ -5,12 +5,25 @@ import { Button } from "@/components/ui/button";
 import { VSModalPaged } from "@/app/lib/authAlerts";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
-
+import {clearAuthSessionToken, setAuthSessionProfile, setAuthSessionToken} from "@/app/lib/authSession";
+import { getDevSessionToken,getAuthSessionToken, setDevSessionToken } from "@/app/lib/devSession";
 export default function SignupViewPage() {
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [submitting, setSubmitting] = useState(false);
+    const pathname = usePathname();
+    useEffect(() => {
+        const t = getDevSessionToken();
+        if (!t) {
+            router.replace("/");
+            return;
+        }
+    }, [router]);
 
+    useEffect(() => {
+        if (pathname !== "/forgetpasswordview") return;
+        clearAuthSessionToken();
+    }, [pathname]);
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (submitting) return;
