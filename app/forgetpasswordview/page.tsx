@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 import {clearAuthSessionToken, setAuthSessionProfile, setAuthSessionToken} from "@/app/lib/authSession";
 import { getDevSessionToken,getAuthSessionToken, setDevSessionToken } from "@/app/lib/devSession";
-export default function SignupViewPage() {
+export default function ForgetPasswordViewPage() {
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [submitting, setSubmitting] = useState(false);
