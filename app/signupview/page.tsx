@@ -2,6 +2,7 @@
 import Image from "next/image";
 import AuthShell2 from "../components/AuthShell2";
 import SignupForm from "./SignupForm";
+import { useEffect, useState } from "react";
 import {clearAuthSessionToken, setAuthSessionProfile, setAuthSessionToken} from "@/app/lib/authSession";
 import { getDevSessionToken,setDevSessionToken } from "@/app/lib/devSession";
 import {usePathname, useRouter} from "next/navigation";
