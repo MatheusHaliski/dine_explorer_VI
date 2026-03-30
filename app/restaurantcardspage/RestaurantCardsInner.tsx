@@ -1002,7 +1002,7 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                     </section>
 
                     {selectedCategoryDecoration ? (
-                        <div className="relative z-10 mt-4 w-full overflow-hidden rounded-3xl border border-white/25 bg-black/20 p-2 shadow-[0_12px_36px_rgba(0,0,0,0.35)]">
+                        <div className="relative z-0 mt-4 w-full rounded-3xl border border-white/25 bg-black/20 p-2 shadow-[0_12px_36px_rgba(0,0,0,0.35)]">
                             <img
                                 src={selectedCategoryDecoration.src}
                                 alt={selectedCategoryDecoration.alt}
