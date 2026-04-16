@@ -53,29 +53,27 @@ import { getLS, setLS } from "@/app/lib/SafeStorage";
 ========================= */
 type RestaurantsCatalogResponse = {
     catalog: Restaurant[];
+    nextCursor: string | null;
 };
 
 type RestaurantsByIdsResponse = {
     restaurants: Restaurant[];
 };
 
-async function fetchRestaurantsCatalog(): Promise<Restaurant[]> {
-    const response = await fetch("/api/restaurants/catalog");
+async function fetchRestaurantsCatalogPage(cursor: string | null, pageSize: number): Promise<RestaurantsCatalogResponse> {
+    const params = new URLSearchParams({ limit: String(pageSize) });
+    if (cursor) {
+        params.set("cursor", cursor);
+    }
+
+    const response = await fetch(`/api/restaurants/catalog?${params.toString()}`);
     if (!response.ok) {
         throw new Error("Failed to load restaurant catalog.");
     }
-    const payload = (await response.json()) as RestaurantsCatalogResponse;
-    return payload.catalog;
+
+    return (await response.json()) as RestaurantsCatalogResponse;
 }
 
-async function getRestaurantsByIds(): Promise<Restaurant[]>{
-    const response = await fetch("/api/restaurants/byIds")
-    if (!response.ok) {
-        throw new Error("Failed to load restaurant details.");
-    }
-    const payload = (await response.json()) as RestaurantsByIdsResponse;
-    return payload.restaurants;
-}
 async function fetchRestaurantsByIds(ids: string[]): Promise<Restaurant[]> {
     const response = await fetch("/api/restaurants/byIds", {
         method: "POST",
@@ -496,9 +494,10 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                 setLoading(true);
                 setError("");
 
-                const items = await fetchRestaurantsCatalog();
+                const payload = await fetchRestaurantsCatalogPage(null, pageSize);
                 if (!isMounted) return;
-                setCatalog(items);
+                setCatalog(payload.catalog);
+                setNextCursor(payload.nextCursor);
             } catch (err) {
                 console.error("[RestaurantCardsPage] load failed:", err);
                 if (isMounted) setError("Failed to load restaurants.");
@@ -520,44 +519,20 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
         }
     };
 
-    const loadDetailsByIds = async (missingIds: string[]) => {
+    const handleLoadMoreClick = async () => {
+        if (!nextCursor) return;
+
         try {
             setLoadingMore(true);
-
-            const items = await fetchRestaurantsByIds(missingIds);
-
-            if (items.length) {
-                setDetailsById((y) => {
-                    const next = { ...y};
-                    items.forEach((r) => (next[r.id] = r));
-                    return next;
-                });
-            }
-
-            if (items.length !== missingIds.length) {
-                const foundIds = new Set(items.map((r) => r.id));
-                const missing = missingIds.filter((id) => !foundIds.has(id));
-                if (missing.length) {
-                    setMissingDetailIds((prev) => {
-                        const next = new Set(prev);
-                        missing.forEach((id) => next.add(id));
-                        return next;
-                    });
-                }
-            }
+            const payload = await fetchRestaurantsCatalogPage(nextCursor, pageSize);
+            setCatalog((prev) => [...prev, ...payload.catalog]);
+            setNextCursor(payload.nextCursor);
         } catch (err) {
-            console.error("[RestaurantCardsPage] details load failed:", err);
-            setError("Failed to load restaurant details.");
+            console.error("[RestaurantCardsPage] catalog load more failed:", err);
+            setError("Failed to load more restaurants.");
         } finally {
             setLoadingMore(false);
         }
-    };
-    const handleLoadMoreClick = async () => {
-        const missingIds = pageIds.filter(
-            (id) => !detailsById[id] && !missingDetailIds.has(id)
-        );
-        if (!missingIds.length) return;
-        await loadDetailsByIds(missingIds);
     };
     const handleLoadMore = async (missingIds: string[]) => {
         try {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { getAdminFirestore } from "@/app/lib/firebaseAdmin";
+import { withFirestoreQueryMetrics } from "@/app/lib/firestoreQueryMetrics";
 
 export const runtime = "nodejs";
 
@@ -19,6 +20,7 @@ type UserRecord = {
 
 const HASH_ALGORITHM = "SHA-256";
 const APP_PEPPER = "vs-usercontrol-v1";
+const USER_COLLECTION = "VSusercontrol";
 
 const buildSalt = (saltBase64: string) =>
     Buffer.concat([
@@ -91,11 +93,22 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     try {
         const db = getAdminFirestore();
-        const snapshot = await db
-            .collection(process.env.NEXT_PUBLIC_DATABASE_NAME!)
-            .where("email", "==", email)
-            .limit(1)
-            .get();
+        const snapshot = await withFirestoreQueryMetrics(
+            {
+                feature_name: "authview_login",
+                collection: USER_COLLECTION,
+                operation_type: "getDocs",
+            },
+            async () => {
+                const result = await db
+                    .collection(USER_COLLECTION)
+                    .where("email", "==", email)
+                    .limit(1)
+                    .get();
+
+                return { result, docsReturned: result.size };
+            }
+        );
 
         const result = snapshot.empty
             ? null

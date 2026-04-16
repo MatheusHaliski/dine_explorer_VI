@@ -3,13 +3,19 @@ import { FieldPath } from "firebase-admin/firestore";
 
 import { getAdminFirestore } from "@/app/lib/firebaseAdmin";
 import type { Restaurant } from "@/app/gate/restaurantpagegate";
+import { withFirestoreQueryMetrics } from "@/app/lib/firestoreQueryMetrics";
+
+const DEFAULT_LIMIT = 20;
+const MAX_LIMIT = 50;
 
 export async function GET(request: NextRequest): Promise<Response> {
     try {
         const { searchParams } = new URL(request.url);
-        const limitParam = Number(searchParams.get("limit") ?? "20");
-        const limitValue = Number.isFinite(limitParam) && limitParam > 0 ? limitParam : 20;
-        const cursor = searchParams.get("cursor");
+        const limitParam = Number(searchParams.get("limit") ?? String(DEFAULT_LIMIT));
+        const limitValue = Number.isFinite(limitParam) && limitParam > 0
+            ? Math.min(limitParam, MAX_LIMIT)
+            : DEFAULT_LIMIT;
+        const cursor = searchParams.get("cursor")?.trim() || null;
 
         const db = getAdminFirestore();
         let query = db
@@ -21,7 +27,18 @@ export async function GET(request: NextRequest): Promise<Response> {
             query = query.startAfter(cursor);
         }
 
-        const snapshot = await query.get();
+        const snapshot = await withFirestoreQueryMetrics(
+            {
+                feature_name: "restaurants_paginated",
+                collection: "restaurants",
+                operation_type: "getDocs",
+            },
+            async () => {
+                const result = await query.get();
+                return { result, docsReturned: result.size };
+            }
+        );
+
         const restaurants = snapshot.docs.map((doc) => ({
             ...(doc.data() as Restaurant),
             id: doc.id,
