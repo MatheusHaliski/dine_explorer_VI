@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import {usePathname, useRouter} from "next/navigation";
 import {VSModalPaged} from  "@/app/lib/authAlerts";
 import {clearAuthSessionToken, setAuthSessionProfile, setAuthSessionToken} from "@/app/lib/authSession";
-import { getDevSessionToken, setDevSessionToken } from "@/app/lib/devSession";
+import { setDevSessionToken } from "@/app/lib/devSession";
 
 
 
@@ -15,15 +15,7 @@ export default function AuthViewClient() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [submitting, setSubmitting] = useState(false);
-    let [devsessiontoken] = useState("");
     const pathname = usePathname();
-    useEffect(() => {
-        const t = getDevSessionToken();
-        if (!t) {
-            router.replace("/");
-            return;
-        }
-    }, [router]);
 
     useEffect(() => {
         if (pathname !== "/authview") return;
@@ -87,15 +79,6 @@ export default function AuthViewClient() {
             setSubmitting(false);
         }
     };
-    devsessiontoken = getDevSessionToken();
-    if (!devsessiontoken) {
-        return (
-            <div className="flex min-h-screen items-center justify-center bg-black text-white">
-                <p className="text-sm uppercase tracking-[0.2em]">Loading...</p>
-            </div>
-        );
-    }
-
     return (
         <AuthShell
             title="Sign In"
