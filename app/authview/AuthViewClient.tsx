@@ -16,7 +16,7 @@ export default function AuthViewClient() {
     const [password, setPassword] = useState("");
     const [submitting, setSubmitting] = useState(false);
     const pathname = usePathname();
-    const AUTH_REQUEST_TIMEOUT_MS = 15_000;
+    const AUTH_REQUEST_TIMEOUT_MS = 45_000;
 
     useEffect(() => {
         if (pathname !== "/authview") return;
@@ -44,7 +44,7 @@ export default function AuthViewClient() {
         try {
             const controller = new AbortController();
             timeoutId = window.setTimeout(() => {
-                controller.abort();
+                controller.abort("auth-request-timeout");
             }, AUTH_REQUEST_TIMEOUT_MS);
             const response = await fetch("/api/auth/verify", {
                 method: "POST",
