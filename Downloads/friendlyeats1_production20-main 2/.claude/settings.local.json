@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -rn \"restaurants/\\\\[id\\\\]\\\\|api/restaurants/\\\\${\" \"/Users/matheushaliski/Downloads/friendlyeats1_production20-main 2/app\" \"/Users/matheushaliski/Downloads/friendlyeats1_production20-main 2/src\")",
+      "Bash(mv \"app/api/restaurants/[id]/reviews\" \"app/api/restaurants/[restaurantId]/reviews\")",
+      "Bash(rmdir \"app/api/restaurants/[id]\")",
+      "Bash(cd \"/Users/matheushaliski/Downloads/friendlyeats1_production20-main 2\" && cp app/.env .env && ls -la .env)"
+    ],
+    "additionalDirectories": [
+      "/Users/matheushaliski/Downloads/friendlyeats1_production20-main 2/app"
+    ]
+  }
+}
