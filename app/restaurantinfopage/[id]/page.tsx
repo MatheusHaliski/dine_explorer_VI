@@ -1,4 +1,5 @@
 import { getAdminFirestore } from "@/app/lib/firebaseAdmin";
+import { COLLECTIONS, SUB } from "@/app/lib/collections";
 import RestaurantInfoFront from "@/app/restaurantinfopage/[id]/RestaurantInfoFront";
 import {useSessionReady} from "@/app/lib/useSessionReady";
 
@@ -25,11 +26,12 @@ export default async function Page({
 
   try {
     const db = getAdminFirestore();
-    const restaurantSnap = await db.collection("restaurants").doc(id).get();
-    const reviewSnap = await db
-      .collection("review")
-      .where("restaurantId", "==", id)
-      .get();
+    const restaurantSnap = await db.collection(COLLECTIONS.RESTAURANTS).doc(id).get();
+    // [DB-TUNING] Read from per-restaurant reviews subcollection (current write path) with legacy fallback.
+    const [subReviewSnap, legacyReviewSnap] = await Promise.all([
+      db.collection(COLLECTIONS.RESTAURANTS).doc(id).collection(SUB.REVIEWS).get(),
+      db.collection(COLLECTIONS.REVIEW).where("restaurantId", "==", id).get(),
+    ]);
 
     if (!restaurantSnap.exists) {
       return <div className="text-white p-6">Restaurant not found.</div>;
@@ -40,12 +42,16 @@ export default async function Page({
       ...restaurantSnap.data(),
     }) as RestaurantRecord;
 
-    const reviews = reviewSnap.docs.map((docItem) =>
-      toPlainObject({
-        id: docItem.id,
-        ...docItem.data(),
-      })
-    ) as ReviewRecord[];
+    const merged = new Map<string, ReviewRecord>();
+    for (const docItem of subReviewSnap.docs) {
+      merged.set(docItem.id, toPlainObject({ id: docItem.id, ...docItem.data() }) as ReviewRecord);
+    }
+    for (const docItem of legacyReviewSnap.docs) {
+      if (!merged.has(docItem.id)) {
+        merged.set(docItem.id, toPlainObject({ id: docItem.id, ...docItem.data() }) as ReviewRecord);
+      }
+    }
+    const reviews = Array.from(merged.values());
 
     return <RestaurantInfoFront restaurant={restaurant} reviews={reviews} />;
   } catch (err) {

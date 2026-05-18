@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { FieldValue } from "firebase-admin/firestore";
 
 import { getAdminFirestore } from "@/app/lib/firebaseAdmin";
+import { COLLECTIONS, SUB } from "@/app/lib/collections";
 import type { SocialPostRecord } from "@/app/lib/hubModels";
 
 export async function GET(
@@ -10,9 +12,9 @@ export async function GET(
     try {
         const { restaurantId } = await params;
         const snapshot = await getAdminFirestore()
-            .collection("restaurants")
+            .collection(COLLECTIONS.RESTAURANTS)
             .doc(restaurantId)
-            .collection("posts")
+            .collection(SUB.POSTS)
             .orderBy("createdAt", "desc")
             .limit(50)
             .get();
@@ -59,9 +61,9 @@ export async function POST(
         };
 
         const doc = await getAdminFirestore()
-            .collection("restaurants")
+            .collection(COLLECTIONS.RESTAURANTS)
             .doc(restaurantId)
-            .collection("posts")
+            .collection(SUB.POSTS)
             .add(post);
 
         return NextResponse.json({ ok: true, id: doc.id, post });

@@ -1,23 +1,31 @@
-# Settings for Backend (on Cloud Run).
-# See https://firebase.google.com/docs/app-hosting/configure#cloud-run
 runConfig:
   minInstances: 0
-  # maxInstances: 100
-  # concurrency: 80
-  # cpu: 1
-  # memoryMiB: 512
 
-# Environment variables and secrets.
-# env:
-  # Configure environment variables.
-  # See https://firebase.google.com/docs/app-hosting/configure#user-defined-environment
-  # - variable: MESSAGE
-  #   value: Hello world!
-  #   availability:
-  #     - BUILD
-  #     - RUNTIME
+# [DB-TUNING] Environment variables for explicit Firestore database routing.
+env:
+  - variable: NEXT_FIREBASE_DATABASE_ID
+    value: newdedb
+    availability:
+      - BUILD
+      - RUNTIME
 
-  # Grant access to secrets in Cloud Secret Manager.
-  # See https://firebase.google.com/docs/app-hosting/configure#secret-parameters
-  # - variable: MY_SECRET
-  #   secret: mySecretRef
+  - variable: NEXT_PUBLIC_FIREBASE_DATABASE_ID
+    value: newdedb
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_FIREBASE_ADMIN_PROJECT_ID
+    value: funcionarioslistaapp2025
+    availability:
+      - RUNTIME
+
+  - variable: NEXT_FIREBASE_ADMIN_CLIENT_EMAIL
+    secret: firebase-admin-client-email
+    availability:
+      - RUNTIME
+
+  - variable: NEXT_FIREBASE_ADMIN_PRIVATE_KEY
+    secret: firebase-admin-private-key
+    availability:
+      - RUNTIME
