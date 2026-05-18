@@ -5,37 +5,53 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function isManager(restaurantId) {
-      return signedIn()
-        && request.auth.token.restaurantId == restaurantId
-        && request.auth.token.restaurantRole == "manager";
+    function roleFor(restaurantId) {
+      return signedIn() && request.auth.token.restaurantId == restaurantId
+        ? request.auth.token.restaurantRole
+        : null;
     }
 
-    function isAttendant(restaurantId) {
-      return signedIn()
-        && request.auth.token.restaurantId == restaurantId
-        && request.auth.token.restaurantRole == "attendant";
-    }
+    function isManager(restaurantId) { return roleFor(restaurantId) == "manager"; }
+    function isAttendant(restaurantId) { return roleFor(restaurantId) == "attendant"; }
+    function isWorker(restaurantId) { return roleFor(restaurantId) == "worker"; }
+    function isStaff(restaurantId) { return isManager(restaurantId) || isAttendant(restaurantId) || isWorker(restaurantId); }
 
     match /restaurants/{restaurantId}/members/{uid} {
-      allow read: if signedIn();
+      allow read: if isStaff(restaurantId);
       allow write: if isManager(restaurantId);
     }
 
     match /restaurants/{restaurantId}/customers/{uid} {
-      allow read: if isManager(restaurantId) || isAttendant(restaurantId);
-      allow write: if isManager(restaurantId) || isAttendant(restaurantId);
+      allow read, write: if isManager(restaurantId) || isAttendant(restaurantId);
     }
 
     match /restaurants/{restaurantId}/conversations/{conversationId} {
-      allow read: if isManager(restaurantId) || isAttendant(restaurantId);
+      allow read: if isManager(restaurantId)
+        || (isAttendant(restaurantId) && resource.data.assignedToUid == request.auth.uid)
+        || (signedIn() && resource.data.clientUid == request.auth.uid);
       allow create: if signedIn();
-      allow update: if isManager(restaurantId) || isAttendant(restaurantId);
+      allow update: if isManager(restaurantId)
+        || isAttendant(restaurantId)
+        || (signedIn() && resource.data.clientUid == request.auth.uid);
     }
 
     match /restaurants/{restaurantId}/posts/{postId} {
       allow read: if true;
       allow write: if isManager(restaurantId) || isAttendant(restaurantId);
+    }
+
+    match /restaurants/{restaurantId}/{collectionName}/{docId} {
+      allow read: if collectionName in ["stories", "events"];
+      allow write: if collectionName in ["stories", "events"] && (isManager(restaurantId) || isAttendant(restaurantId));
+      allow read: if collectionName == "ugc" && isStaff(restaurantId);
+      allow create: if collectionName == "ugc" && signedIn();
+      allow update: if collectionName == "ugc" && (isManager(restaurantId) || isAttendant(restaurantId));
+      allow read, write: if collectionName == "issues" && (isManager(restaurantId) || isAttendant(restaurantId));
+    }
+
+    match /restaurants/{restaurantId}/operationsChannels/{channelId}/messages/{messageId} {
+      allow read, create: if isStaff(restaurantId);
+      allow update: if isManager(restaurantId) || isAttendant(restaurantId);
     }
 
     match /restaurants/{restaurantId}/catalog/{itemId} {
