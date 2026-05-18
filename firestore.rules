@@ -25,14 +25,25 @@ service cloud.firestore {
       allow read, write: if isManager(restaurantId) || isAttendant(restaurantId);
     }
 
+    function isConversationOwner() {
+      return signedIn() && resource.data.clientUid == request.auth.uid;
+    }
+
+    function clientConversationUpdateKeysAllowed() {
+      return request.resource.data.diff(resource.data).changedKeys().hasOnly([
+        "lastMessage",
+        "updatedAt"
+      ]);
+    }
+
     match /restaurants/{restaurantId}/conversations/{conversationId} {
       allow read: if isManager(restaurantId)
         || (isAttendant(restaurantId) && resource.data.assignedToUid == request.auth.uid)
-        || (signedIn() && resource.data.clientUid == request.auth.uid);
+        || isConversationOwner();
       allow create: if signedIn();
       allow update: if isManager(restaurantId)
         || isAttendant(restaurantId)
-        || (signedIn() && resource.data.clientUid == request.auth.uid);
+        || (isConversationOwner() && clientConversationUpdateKeysAllowed());
     }
 
     match /restaurants/{restaurantId}/posts/{postId} {

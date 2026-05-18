@@ -126,6 +126,27 @@ export type IssueRecord = {
     assignedToUid: string | null;
     priority: "low" | "normal" | "high";
     dueAt: number;
+    csatRating?: number;
+};
+
+export type ChannelMessage = {
+    senderUid: string;
+    senderRole: "client" | "attendant" | "manager" | "worker" | "bot";
+    text: string;
+    attachments?: string[];
+    createdAt: number;
+};
+
+export type IssueRecord = {
+    id?: string;
+    restaurantId: string;
+    conversationId?: string;
+    title: string;
+    description?: string;
+    status: "new" | "assigned" | "waiting_customer" | "resolved";
+    assignedToUid: string | null;
+    priority: "low" | "normal" | "high";
+    dueAt: number;
     createdAt: number;
     updatedAt: number;
 };
