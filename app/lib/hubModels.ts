@@ -68,6 +68,4 @@ export type ConversationRecord = {
     createdAt: number | Timestamp;
     updatedAt: number | Timestamp;
     dueAt: number;
-    createdAt: number;
-    updatedAt: number;
 };
