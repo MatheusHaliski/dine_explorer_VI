@@ -1,59 +1,18 @@
 {
   "indexes": [
-    {
-      "collectionGroup": "restaurants",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "country",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "__name__",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "restaurants",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "country",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "state",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "__name__",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "restaurants",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "country",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "state",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "city",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "__name__",
-          "order": "ASCENDING"
-        }
-      ]
-    }
+    {"collectionGroup":"restaurants","queryScope":"COLLECTION","fields":[{"fieldPath":"country","order":"ASCENDING"},{"fieldPath":"__name__","order":"ASCENDING"}]},
+    {"collectionGroup":"restaurants","queryScope":"COLLECTION","fields":[{"fieldPath":"country","order":"ASCENDING"},{"fieldPath":"state","order":"ASCENDING"},{"fieldPath":"__name__","order":"ASCENDING"}]},
+    {"collectionGroup":"restaurants","queryScope":"COLLECTION","fields":[{"fieldPath":"country","order":"ASCENDING"},{"fieldPath":"state","order":"ASCENDING"},{"fieldPath":"city","order":"ASCENDING"},{"fieldPath":"__name__","order":"ASCENDING"}]},
+    {"collectionGroup":"conversations","queryScope":"COLLECTION","fields":[{"fieldPath":"status","order":"ASCENDING"},{"fieldPath":"updatedAt","order":"DESCENDING"}]},
+    {"collectionGroup":"conversations","queryScope":"COLLECTION","fields":[{"fieldPath":"priority","order":"ASCENDING"},{"fieldPath":"updatedAt","order":"DESCENDING"}]},
+    {"collectionGroup":"conversations","queryScope":"COLLECTION","fields":[{"fieldPath":"assignedToUid","order":"ASCENDING"},{"fieldPath":"updatedAt","order":"DESCENDING"}]},
+    {"collectionGroup":"customers","queryScope":"COLLECTION","fields":[{"fieldPath":"loyaltyTier","order":"ASCENDING"},{"fieldPath":"totalSpend","order":"DESCENDING"}]},
+    {"collectionGroup":"customers","queryScope":"COLLECTION","fields":[{"fieldPath":"lastVisitAt","order":"DESCENDING"}]},
+    {"collectionGroup":"posts","queryScope":"COLLECTION","fields":[{"fieldPath":"category","order":"ASCENDING"},{"fieldPath":"createdAt","order":"DESCENDING"}]},
+    {"collectionGroup":"posts","queryScope":"COLLECTION","fields":[{"fieldPath":"type","order":"ASCENDING"},{"fieldPath":"createdAt","order":"DESCENDING"}]},
+    {"collectionGroup":"orders","queryScope":"COLLECTION","fields":[{"fieldPath":"status","order":"ASCENDING"},{"fieldPath":"createdAt","order":"DESCENDING"}]},
+    {"collectionGroup":"orders","queryScope":"COLLECTION","fields":[{"fieldPath":"customerUid","order":"ASCENDING"},{"fieldPath":"createdAt","order":"DESCENDING"}]},
+    {"collectionGroup":"review","queryScope":"COLLECTION","fields":[{"fieldPath":"restaurantId","order":"ASCENDING"},{"fieldPath":"createdAt","order":"DESCENDING"}]}
   ],
   "fieldOverrides": []
 }
