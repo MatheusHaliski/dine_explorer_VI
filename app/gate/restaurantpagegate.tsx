@@ -18,6 +18,13 @@ export type Restaurant = {
     rating?: number;
     grade?: number;
     starsgiven?: number;
+    // [DB-TUNING] Campos derivados para evitar full scan em avaliações e analytics.
+    ratingSum?: number;
+    ratingCount?: number;
+    postsCount?: number;
+    conversationsCount?: number;
+    ordersCount?: number;
+    lastActivityAt?: number;
 
     country?: string;
     state?: string;

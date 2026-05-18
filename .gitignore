@@ -37,3 +37,9 @@ testbcrypt.js
 # misc
 .DS_Store
 
+
+# [DB-TUNING] Never commit local env files or service account credentials.
+.env.local
+.env*.local
+keys/
+*serviceAccount*.json

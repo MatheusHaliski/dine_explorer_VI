@@ -1,3 +1,6 @@
+import type { Timestamp } from "firebase-admin/firestore";
+
+// [DB-TUNING] Aceita Timestamp para padronização de datas em novos documentos.
 export type StaffRole = "manager" | "attendant" | "worker";
 export type GlobalRole = "platform_admin" | "restaurant_user" | "customer";
 
@@ -47,8 +50,8 @@ export type SocialPostRecord = {
         productIds: string[];
         href?: string;
     };
-    createdAt: number;
-    updatedAt: number;
+    createdAt: number | Timestamp;
+    updatedAt: number | Timestamp;
 };
 
 export type ConversationRecord = {
@@ -61,7 +64,7 @@ export type ConversationRecord = {
     assignedToUid: string | null;
     channel: "in_app" | "instagram" | "whatsapp" | "facebook";
     lastMessage: string;
-    createdAt: number;
-    updatedAt: number;
+    createdAt: number | Timestamp;
+    updatedAt: number | Timestamp;
     dueAt: number;
 };

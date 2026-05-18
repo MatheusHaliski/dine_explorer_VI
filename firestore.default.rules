@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // [DB-TUNING] Keep default database locked while migrating all traffic to newdedb.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
