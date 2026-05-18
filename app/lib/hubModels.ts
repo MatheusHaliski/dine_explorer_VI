@@ -9,7 +9,7 @@ export type ConversationIntent =
     | "feedback"
     | "general";
 
-export type ConversationStatus = "new" | "assigned" | "pending" | "resolved";
+export type ConversationStatus = "new" | "assigned" | "pending" | "waiting_customer" | "resolved";
 
 export type MemberRecord = {
     uid: string;
@@ -31,6 +31,7 @@ export type CustomerRecord = {
     totalSpend: number;
     tags: string[];
     lastVisitAt?: number;
+    shopifyCustomerId?: string;
 };
 
 export type SocialPostRecord = {
@@ -47,6 +48,43 @@ export type SocialPostRecord = {
         productIds: string[];
         href?: string;
     };
+    linkedConversationCta?: "ask_attendant";
+    createdAt: number;
+    updatedAt: number;
+};
+
+export type StoryRecord = {
+    id?: string;
+    restaurantId: string;
+    authorUid: string;
+    mediaUrl: string;
+    title?: string;
+    expiresAt: number;
+    createdAt: number;
+};
+
+export type UgcRecord = {
+    id?: string;
+    restaurantId: string;
+    customerUid: string;
+    mediaUrl: string;
+    caption?: string;
+    menuItemIds: string[];
+    status: "pending" | "approved" | "rejected";
+    moderatedByUid?: string;
+    createdAt: number;
+    updatedAt: number;
+};
+
+export type EventRecord = {
+    id?: string;
+    restaurantId: string;
+    title: string;
+    description?: string;
+    startsAt: number;
+    endsAt?: number;
+    rsvpCount: number;
+    reminderEnabled: boolean;
     createdAt: number;
     updatedAt: number;
 };
@@ -64,4 +102,27 @@ export type ConversationRecord = {
     createdAt: number;
     updatedAt: number;
     dueAt: number;
+    csatRating?: number;
+};
+
+export type ChannelMessage = {
+    senderUid: string;
+    senderRole: "client" | "attendant" | "manager" | "worker" | "bot";
+    text: string;
+    attachments?: string[];
+    createdAt: number;
+};
+
+export type IssueRecord = {
+    id?: string;
+    restaurantId: string;
+    conversationId?: string;
+    title: string;
+    description?: string;
+    status: "new" | "assigned" | "waiting_customer" | "resolved";
+    assignedToUid: string | null;
+    priority: "low" | "normal" | "high";
+    dueAt: number;
+    createdAt: number;
+    updatedAt: number;
 };
