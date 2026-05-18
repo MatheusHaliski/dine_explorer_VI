@@ -12,7 +12,7 @@ export type ConversationIntent =
     | "feedback"
     | "general";
 
-export type ConversationStatus = "new" | "assigned" | "pending" | "resolved";
+export type ConversationStatus = "new" | "assigned" | "pending" | "waiting_customer" | "resolved";
 
 export type MemberRecord = {
     uid: string;
@@ -34,6 +34,7 @@ export type CustomerRecord = {
     totalSpend: number;
     tags: string[];
     lastVisitAt?: number;
+    shopifyCustomerId?: string;
 };
 
 export type SocialPostRecord = {
@@ -67,4 +68,6 @@ export type ConversationRecord = {
     createdAt: number | Timestamp;
     updatedAt: number | Timestamp;
     dueAt: number;
+    createdAt: number;
+    updatedAt: number;
 };
