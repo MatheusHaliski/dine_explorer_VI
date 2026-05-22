@@ -69,3 +69,51 @@ export type ConversationRecord = {
     updatedAt: number | Timestamp;
     dueAt: number;
 };
+
+export type ConciergeOccasion =
+    | "date"
+    | "family"
+    | "business"
+    | "solo"
+    | "friends";
+
+export type ConciergeMood =
+    | "relaxed"
+    | "celebratory"
+    | "romantic"
+    | "social"
+    | "comfort";
+
+export type MoodCheckinRecord = {
+    id?: string;
+    customerUid: string;
+    mood: ConciergeMood;
+    occasion: ConciergeOccasion;
+    partySize: number;
+    createdAt: number;
+};
+
+export type ConciergeRecommendedItem = {
+    productId: string;
+    name: string;
+    photo?: string;
+    reason: string;
+};
+
+export type ConciergeRecommendationRecord = {
+    id?: string;
+    customerUid: string;
+    checkinId: string;
+    recommendedItems: ConciergeRecommendedItem[];
+    matchScore: number;
+    postDraft: {
+        body: string;
+        shoppableCta: {
+            label: string;
+            productIds: string[];
+        };
+    };
+    status: "pending" | "accepted" | "dismissed";
+    createdAt: number;
+    acceptedAt?: number;
+};

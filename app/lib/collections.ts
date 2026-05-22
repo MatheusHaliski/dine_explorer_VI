@@ -13,4 +13,6 @@ export const SUB = {
   CATALOG: "catalog",
   IDEMPOTENCY: "idempotency",
   REVIEWS: "reviews",
+  MOOD_CHECKINS: "moodCheckins",
+  CONCIERGE_RECOMMENDATIONS: "conciergeRecommendations",
 } as const;

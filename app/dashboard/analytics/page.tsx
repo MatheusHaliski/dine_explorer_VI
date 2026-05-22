@@ -14,6 +14,8 @@ export default async function DashboardAnalyticsPage({ searchParams }: Analytics
     { label: "Posts", value: Number(data.postsCount ?? 0) },
     { label: "Conversations", value: Number(data.conversationsCount ?? 0) },
     { label: "Orders", value: Number(data.ordersCount ?? 0) },
+    { label: "Concierge Check-ins", value: Number(data.conciergeCheckinsCount ?? 0) },
+    { label: "Concierge Aceitos", value: Number(data.conciergeAcceptanceCount ?? 0) },
   ];
   return <main className="min-h-screen bg-black text-white p-6 space-y-5"><h1 className="text-2xl font-semibold">Analytics</h1><p className="text-sm text-zinc-300">Engagement → Orders → Retention ({restaurantId})</p><div className="grid md:grid-cols-3 gap-3">{metrics.map((metric) => <article key={metric.label} className="border border-zinc-800 rounded p-4"><p className="text-zinc-300 text-sm">{metric.label}</p><p className="text-2xl font-semibold">{metric.value}</p></article>)}</div></main>;
 }
