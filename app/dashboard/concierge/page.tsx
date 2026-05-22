@@ -1,11 +1,11 @@
 import { COLLECTIONS, SUB } from "@/app/lib/collections";
 import { getAdminFirestore } from "@/app/lib/firebaseAdmin";
-import type { ConciergeRecommendationRecord, MoodCheckinRecord } from "@/app/lib/hubModels";
+import type { ConciergeRecommendationRecord } from "@/app/lib/hubModels";
 
 type DashboardConciergePageProps = { searchParams?: Promise<{ restaurantId?: string }> };
 
 type OccasionCount = { occasion: string; count: number };
-type TopCombo = { mood: string; itemName: string; count: number };
+type TopCombo = { itemName: string; count: number };
 
 export default async function DashboardConciergePage({ searchParams }: DashboardConciergePageProps) {
     const resolvedSearchParams = (await searchParams) ?? {};
@@ -33,31 +33,21 @@ export default async function DashboardConciergePage({ searchParams }: Dashboard
         (doc) => doc.data() as ConciergeRecommendationRecord
     );
 
-    // Count occasions from accepted recommendations
+    // Derive both occasion breakdown and top dishes from the restaurant-scoped
+    // recommendations collection — avoids a collectionGroup query that would
+    // otherwise return check-ins from other restaurants.
     const occasionMap = new Map<string, number>();
     const comboMap = new Map<string, number>();
 
     for (const rec of recommendations) {
-        // We need checkin data for mood — count item names by mood from accepted recs
+        if (rec.occasion) {
+            occasionMap.set(rec.occasion, (occasionMap.get(rec.occasion) ?? 0) + 1);
+        }
         if (rec.status === "accepted") {
             for (const item of rec.recommendedItems) {
-                const key = `${item.name}`;
-                comboMap.set(key, (comboMap.get(key) ?? 0) + 1);
+                comboMap.set(item.name, (comboMap.get(item.name) ?? 0) + 1);
             }
         }
-    }
-
-    // Fetch recent checkins for occasion breakdown (last 100)
-    const checkinSnap = await db
-        .collectionGroup(SUB.MOOD_CHECKINS)
-        .orderBy("createdAt", "desc")
-        .limit(100)
-        .get();
-
-    const checkins = checkinSnap.docs.map((doc) => doc.data() as MoodCheckinRecord);
-
-    for (const checkin of checkins) {
-        occasionMap.set(checkin.occasion, (occasionMap.get(checkin.occasion) ?? 0) + 1);
     }
 
     const occasionRanking: OccasionCount[] = Array.from(occasionMap.entries())
@@ -65,7 +55,7 @@ export default async function DashboardConciergePage({ searchParams }: Dashboard
         .sort((a, b) => b.count - a.count);
 
     const topCombos: TopCombo[] = Array.from(comboMap.entries())
-        .map(([itemName, count]) => ({ mood: "—", itemName, count }))
+        .map(([itemName, count]) => ({ itemName, count }))
         .sort((a, b) => b.count - a.count)
         .slice(0, 5);
 

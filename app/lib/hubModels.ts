@@ -86,6 +86,7 @@ export type ConciergeMood =
 
 export type MoodCheckinRecord = {
     id?: string;
+    restaurantId: string;
     customerUid: string;
     mood: ConciergeMood;
     occasion: ConciergeOccasion;
@@ -104,6 +105,8 @@ export type ConciergeRecommendationRecord = {
     id?: string;
     customerUid: string;
     checkinId: string;
+    mood: ConciergeMood;
+    occasion: ConciergeOccasion;
     recommendedItems: ConciergeRecommendedItem[];
     matchScore: number;
     postDraft: {

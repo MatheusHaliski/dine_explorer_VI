@@ -4,7 +4,6 @@ import { FieldValue } from "firebase-admin/firestore";
 import { getAdminFirestore } from "@/app/lib/firebaseAdmin";
 import { COLLECTIONS, SUB } from "@/app/lib/collections";
 import { readSession } from "@/app/lib/serverSession";
-import { withRetry } from "@/app/lib/firestoreRetry";
 import { withFirestoreQueryMetrics } from "@/app/lib/firestoreQueryMetrics";
 import { generateConciergeRecommendation } from "@/app/lib/conciergeAI";
 import type {
@@ -104,41 +103,43 @@ export async function POST(
 
     const now = Date.now();
 
-    // Persist checkin + recommendation atomically
-    const { checkinId, recommendationId } = await withRetry(async () => {
-        const checkin: MoodCheckinRecord = {
-            customerUid: session.sub,
-            mood: mood as ConciergeMood,
-            occasion: occasion as ConciergeOccasion,
-            partySize: parsedPartySize,
-            createdAt: now,
-        };
-        const checkinRef = await restaurantRef
-            .collection(SUB.CUSTOMERS)
-            .doc(session.sub)
-            .collection(SUB.MOOD_CHECKINS)
-            .add(checkin);
+    // Pre-generate refs so that IDs are fixed before any retry attempt.
+    // Using batch.set() instead of .add() makes every write idempotent on retry.
+    const checkinRef = restaurantRef
+        .collection(SUB.CUSTOMERS)
+        .doc(session.sub)
+        .collection(SUB.MOOD_CHECKINS)
+        .doc();
+    const recRef = restaurantRef.collection(SUB.CONCIERGE_RECOMMENDATIONS).doc();
 
-        const recommendation: ConciergeRecommendationRecord = {
-            customerUid: session.sub,
-            checkinId: checkinRef.id,
-            recommendedItems: aiOutput.recommendedItems,
-            matchScore: aiOutput.matchScore,
-            postDraft: aiOutput.postDraft,
-            status: "pending",
-            createdAt: now,
-        };
-        const recRef = await restaurantRef
-            .collection(SUB.CONCIERGE_RECOMMENDATIONS)
-            .add(recommendation);
+    const checkin: MoodCheckinRecord = {
+        restaurantId,
+        customerUid: session.sub,
+        mood: mood as ConciergeMood,
+        occasion: occasion as ConciergeOccasion,
+        partySize: parsedPartySize,
+        createdAt: now,
+    };
+    const recommendation: ConciergeRecommendationRecord = {
+        customerUid: session.sub,
+        checkinId: checkinRef.id,
+        mood: mood as ConciergeMood,
+        occasion: occasion as ConciergeOccasion,
+        recommendedItems: aiOutput.recommendedItems,
+        matchScore: aiOutput.matchScore,
+        postDraft: aiOutput.postDraft,
+        status: "pending",
+        createdAt: now,
+    };
 
-        // Increment restaurant-level counter
-        await restaurantRef.update({
-            conciergeCheckinsCount: FieldValue.increment(1),
-        });
+    // Single atomic batch: all three writes succeed or none do.
+    const batch = db.batch();
+    batch.set(checkinRef, checkin);
+    batch.set(recRef, recommendation);
+    batch.update(restaurantRef, { conciergeCheckinsCount: FieldValue.increment(1) });
+    await batch.commit();
 
-        return { checkinId: checkinRef.id, recommendationId: recRef.id };
-    });
+    const { checkinId, recommendationId } = { checkinId: checkinRef.id, recommendationId: recRef.id };
 
     return NextResponse.json({
         ok: true,
