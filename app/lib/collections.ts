@@ -15,4 +15,7 @@ export const SUB = {
   REVIEWS: "reviews",
   MOOD_CHECKINS: "moodCheckins",
   CONCIERGE_RECOMMENDATIONS: "conciergeRecommendations",
+  DINING_SESSIONS: "diningSessions",
+  FLAVOR_PROFILES: "flavorProfiles",
+  DISH_RESPONSES: "dishResponses",
 } as const;

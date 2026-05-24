@@ -117,3 +117,42 @@ export type ConciergeRecommendationRecord = {
     createdAt: number;
     acceptedAt?: number;
 };
+
+export type WearableSignals = {
+    heartRate?: number;
+    stressLevel?: number;
+    skinConductance?: number;
+    timestamp: number;
+};
+
+export type DiningSessionRecord = {
+    id?: string;
+    customerUid: string;
+    restaurantId: string;
+    tableNumber?: string;
+    startedAt: number;
+    status: "active" | "closed";
+    currentHappinessScore?: number;
+    currentDishName?: string;
+    updatedAt: number;
+};
+
+export type FlavorProfileRecord = {
+    customerUid: string;
+    restaurantId: string;
+    preferredFlavors: string[];
+    happinessHistory: { dishName: string; score: number; recordedAt: number }[];
+    updatedAt: number;
+};
+
+export type DishResponseRecord = {
+    id?: string;
+    sessionId: string;
+    customerUid: string;
+    dishName: string;
+    happinessScore: number;
+    smoothedScore: number;
+    aiScore?: number;
+    dishWindowClosed: boolean;
+    recordedAt: number;
+};
