@@ -117,3 +117,80 @@ export type ConciergeRecommendationRecord = {
     createdAt: number;
     acceptedAt?: number;
 };
+
+// ─── BioDine™ — Cyber-Physical Wearable Layer ────────────────────────────────
+
+export type WearableSignalType =
+    | "heart_rate"        // BPM — spike = excitement, drop = boredom
+    | "gsr"               // galvanic skin response — emotional arousal
+    | "motion_cadence"    // chew/eating pace — fast = loving it
+    | "skin_temp"         // peripheral temp correlates with comfort
+    | "hrv";              // heart rate variability — stress indicator
+
+export type WearableSignal = {
+    type: WearableSignalType;
+    value: number;
+    unit: string;
+    capturedAt: number;
+};
+
+/** A diner's full biometric session at one table visit */
+export type WearableSessionRecord = {
+    id?: string;
+    customerUid: string;
+    restaurantId: string;
+    tableLabel: string;         // e.g. "Mesa 12"
+    wearableDeviceId: string;   // BLE MAC or ring serial
+    status: "active" | "ended";
+    startedAt: number;
+    endedAt?: number;
+    /** Running average happiness score 0–100 computed by BioDine AI */
+    happinessScore: number;
+    /** productId of the dish currently being served (updated by kitchen) */
+    currentDishId?: string;
+};
+
+/** AI-inferred emotional response mapped to a specific dish */
+export type DishResponseRecord = {
+    id?: string;
+    sessionId: string;
+    customerUid: string;
+    restaurantId: string;
+    dishId: string;
+    dishName: string;
+    /** 0–100: how strongly the diner's biometrics reacted positively */
+    excitementScore: number;
+    /** 0–100: how much comfort/relaxation the diner showed */
+    comfortScore: number;
+    /** composite score used for flavor profile learning */
+    overallScore: number;
+    signals: WearableSignal[];   // raw signals during this dish window
+    analysedAt: number;
+};
+
+/** Accumulated biological taste profile — evolves across all restaurant visits */
+export type FlavorProfileRecord = {
+    id?: string;
+    customerUid: string;
+    /** Cuisine/category affinities, e.g. { "umami": 87, "spicy": 42, "sweet": 71 } */
+    categoryAffinities: Record<string, number>;
+    /** Top dishes by composite biometric score across all restaurants */
+    topDishes: Array<{ dishId: string; dishName: string; restaurantId: string; score: number }>;
+    /** Dishes that triggered discomfort (GSR spike + HR drop) */
+    avoidList: Array<{ dishId: string; dishName: string; reason: string }>;
+    totalSessions: number;
+    lastUpdatedAt: number;
+};
+
+/** Real-time per-table snapshot used by the Dining Pulse dashboard */
+export type TablePulseRecord = {
+    tableLabel: string;
+    sessionId: string;
+    customerDisplayName?: string;
+    happinessScore: number;   // 0–100
+    trend: "rising" | "stable" | "falling";
+    currentDishName?: string;
+    /** AI-generated staff action prompt */
+    staffAction?: string;
+    lastSignalAt: number;
+};

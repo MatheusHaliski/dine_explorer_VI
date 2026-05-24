@@ -3,6 +3,7 @@ import type {
     ConciergeMood,
     ConciergeOccasion,
     ConciergeRecommendedItem,
+    FlavorProfileRecord,
 } from "./hubModels";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -30,9 +31,16 @@ export type ConciergeAIOutput = {
     };
 };
 
-const SYSTEM_PROMPT = `You are a culinary concierge AI for a restaurant discovery app.
-Given a customer's mood, occasion, party size, and order history, select exactly 3 items
-from the provided catalog that best match their moment.
+const SYSTEM_PROMPT = `You are a culinary concierge AI for Dine Explorer AI, a BioDine™-powered restaurant platform.
+Given a customer's mood, occasion, party size, order history, and optionally their BioDine™ biometric flavor profile,
+select exactly 3 items from the provided catalog that best match their moment AND their biological taste preferences.
+
+When a flavor profile is provided:
+- Prioritize dishes aligned with high-affinity categories (score > 65)
+- NEVER recommend dishes in the avoidList
+- Boost matchScore when top biometric dishes match catalog items
+- Mention the biometric insight in the recommendation reason when relevant
+
 Always respond with valid JSON matching this exact shape:
 {
   "recommendedItems": [
@@ -44,7 +52,7 @@ Always respond with valid JSON matching this exact shape:
     "shoppableCta": { "label": "string (max 30 chars)", "productIds": ["string"] }
   }
 }
-Rules: matchScore reflects how well the selection fits mood + occasion. body should feel personal, not promotional.`;
+Rules: matchScore reflects how well the selection fits mood + occasion + biometric profile. body should feel personal, not promotional.`;
 
 export async function generateConciergeRecommendation(params: {
     mood: ConciergeMood;
@@ -52,14 +60,24 @@ export async function generateConciergeRecommendation(params: {
     partySize: number;
     catalog: CatalogItem[];
     orderHistory: OrderHistoryItem[];
+    /** BioDine™ biometric flavor profile — enriches recommendations with biological taste data */
+    flavorProfile?: FlavorProfileRecord;
 }): Promise<ConciergeAIOutput> {
-    const { mood, occasion, partySize, catalog, orderHistory } = params;
+    const { mood, occasion, partySize, catalog, orderHistory, flavorProfile } = params;
 
     const catalogText = JSON.stringify(catalog, null, 2);
+
+    const flavorContext = flavorProfile
+        ? `\nBioDine™ Flavor Profile (biometric data from ${flavorProfile.totalSessions} visits):
+Category affinities: ${JSON.stringify(flavorProfile.categoryAffinities)}
+Biometric top dishes: ${flavorProfile.topDishes.slice(0, 5).map((d) => d.dishName).join(", ") || "none yet"}
+Avoid list: ${flavorProfile.avoidList.map((d) => `${d.dishName} (${d.reason})`).join(", ") || "none"}`
+        : "\nNo BioDine™ profile yet — use mood and history only.";
+
     const userContext = `Mood: ${mood}
 Occasion: ${occasion}
 Party size: ${partySize}
-Order history (past items): ${orderHistory.length > 0 ? JSON.stringify(orderHistory) : "No history yet"}`;
+Order history (past items): ${orderHistory.length > 0 ? JSON.stringify(orderHistory) : "No history yet"}${flavorContext}`;
 
     const response = await client.messages.create({
         model: "claude-haiku-4-5-20251001",
