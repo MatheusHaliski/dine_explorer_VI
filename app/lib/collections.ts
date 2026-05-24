@@ -17,7 +17,7 @@ export const SUB = {
   REVIEWS: "reviews",
   MOOD_CHECKINS: "moodCheckins",
   CONCIERGE_RECOMMENDATIONS: "conciergeRecommendations",
-  // BioDine™ CPS subcollections (scoped under restaurants/{id})
-  WEARABLE_SESSIONS: "wearableSessions",
+  DINING_SESSIONS: "diningSessions",
+  FLAVOR_PROFILES: "flavorProfiles",
   DISH_RESPONSES: "dishResponses",
 } as const;
