@@ -2,6 +2,8 @@
 export const COLLECTIONS = {
   RESTAURANTS: "restaurants",
   REVIEW: "review",
+  // BioDine™ CPS collections (top-level, cross-restaurant)
+  FLAVOR_PROFILES: "flavorProfiles",
 } as const;
 
 export const SUB = {
