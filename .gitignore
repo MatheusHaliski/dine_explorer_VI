@@ -43,3 +43,14 @@ testbcrypt.js
 .env*.local
 keys/
 *serviceAccount*.json
+
+# projects-migrados — nunca versionar backups ou dumps reais
+projects-migrados/**/database/backups/*
+!projects-migrados/**/database/backups/.gitkeep
+projects-migrados/**/*.sql.gz
+projects-migrados/**/*.dump
+projects-migrados/**/*.dump.gz
+# nunca versionar .env reais dos subprojetos
+projects-migrados/**/.env
+projects-migrados/**/.env.local
+projects-migrados/**/.env.production

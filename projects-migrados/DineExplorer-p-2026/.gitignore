@@ -1,0 +1,37 @@
+# ── Ambiente ─────────────────────────────────
+.env
+.env.local
+.env.production
+.env.development
+.env*.local
+
+# ── Credenciais e chaves ──────────────────────
+*.pem
+*.key
+*.p12
+serviceAccount*.json
+*service*account*.json
+*ServiceKey*.json
+firebase-adminsdk*.json
+*firebase_admin*.json
+keys/
+
+# ── Backups de banco — NUNCA versionar ────────
+database/backups/*
+!database/backups/.gitkeep
+*.sql
+*.sql.gz
+*.dump
+*.dump.gz
+
+# ── Node / Next.js ───────────────────────────
+node_modules/
+.next/
+out/
+dist/
+build/
+
+# ── Misc ─────────────────────────────────────
+.DS_Store
+*.log
+*.tsbuildinfo
