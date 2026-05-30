@@ -54,3 +54,8 @@ projects-migrados/**/*.dump.gz
 projects-migrados/**/.env
 projects-migrados/**/.env.local
 projects-migrados/**/.env.production
+# EXCEÇÕES: .env.example e scripts SQL (sem dados reais) devem ser versionados
+!projects-migrados/**/.env.example
+!projects-migrados/**/database/migrations/*.sql
+!projects-migrados/**/database/scripts/*.sql
+!projects-migrados/**/database/scripts/*.sh
