@@ -95,7 +95,7 @@ export default function AuthViewClient() {
             setAuthSessionToken(token);
             setAuthSessionProfile({ email: normalizedEmail });
             setDevSessionToken(token);
-            router.replace("/restaurantcardspage");
+            router.replace("/home");
         } catch (error) {
             console.error("[AuthView] Failed to verify credentials:", error);
             const timedOut =
