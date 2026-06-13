@@ -49,7 +49,7 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ restau
 export async function POST(request: NextRequest, { params }: { params: Promise<{ restaurantId: string; channelId: string }> }) {
   const { restaurantId, channelId } = await params;
   const identity = await verifyStaffIdentity(request, restaurantId);
-  if (!identity.ok) return identity.response;
+  if (identity.ok === false) return identity.response;
 
   const payload = (await request.json()) as Partial<ChannelMessage>;
 

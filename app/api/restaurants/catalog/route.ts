@@ -72,8 +72,8 @@ export async function GET(request: NextRequest): Promise<Response> {
         );
 
         const catalog = snapshot.docs.map((doc) => ({
-            id: doc.id,
             ...(doc.data() as Partial<Restaurant>),
+            id: doc.id,
         }));
 
         const lastDoc = snapshot.docs.at(-1);

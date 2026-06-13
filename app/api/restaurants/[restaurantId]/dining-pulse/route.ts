@@ -4,7 +4,7 @@ import { getAdminFirestore } from "@/app/lib/firebaseAdmin";
 import { COLLECTIONS, SUB } from "@/app/lib/collections";
 import { readSession } from "@/app/lib/serverSession";
 import { withFirestoreQueryMetrics } from "@/app/lib/firestoreQueryMetrics";
-import type { DishResponseRecord } from "@/app/lib/hubModels";
+import type { DishAnalysisResponseRecord } from "@/app/lib/hubModels";
 
 const RECENT_WINDOW_MS = 30 * 60 * 1000; // 30 minutes
 
@@ -34,7 +34,7 @@ export async function GET(
 
             const items = snap.docs.map((doc) => ({
                 id: doc.id,
-                ...(doc.data() as Omit<DishResponseRecord, "id">),
+                ...(doc.data() as Omit<DishAnalysisResponseRecord, "id">),
             }));
             return { result: items, docsReturned: snap.size };
         }
@@ -45,7 +45,7 @@ export async function GET(
     // Skipping subsequent entries prevents the map from being overwritten with
     // stale (older) data, which would cause downstream AI orchestration to operate
     // on the wrong dish context.
-    const pulseMap = new Map<string, DishResponseRecord>();
+    const pulseMap = new Map<string, DishAnalysisResponseRecord>();
     for (const response of recentDishResponses) {
         if (!pulseMap.has(response.sessionId)) {
             pulseMap.set(response.sessionId, response);

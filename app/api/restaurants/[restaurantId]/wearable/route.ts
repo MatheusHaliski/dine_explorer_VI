@@ -4,7 +4,7 @@ import { getAdminFirestore } from "@/app/lib/firebaseAdmin";
 import { COLLECTIONS, SUB } from "@/app/lib/collections";
 import { readSession, verifySessionToken } from "@/app/lib/serverSession";
 import { withRetry } from "@/app/lib/firestoreRetry";
-import type { DiningSessionRecord, FlavorProfileRecord, WearableSignals } from "@/app/lib/hubModels";
+import type { DiningSessionRecord, WearableFlavorProfileRecord, WearableSignals } from "@/app/lib/hubModels";
 
 // Wearable companion apps may not have browser cookies, so accept the same
 // HMAC-signed token via Authorization: Bearer as a fallback.
@@ -90,7 +90,7 @@ export async function POST(
 
         const profileDoc = await profileRef.get();
         const existing = profileDoc.exists
-            ? (profileDoc.data() as FlavorProfileRecord)
+            ? (profileDoc.data() as WearableFlavorProfileRecord)
             : null;
 
         const historyEntry =
@@ -104,7 +104,7 @@ export async function POST(
                   ]
                 : [];
 
-        const updatedProfile: FlavorProfileRecord = {
+        const updatedProfile: WearableFlavorProfileRecord = {
             customerUid: auth.sub,
             restaurantId,
             preferredFlavors: existing?.preferredFlavors ?? [],

@@ -5,7 +5,7 @@ import { COLLECTIONS, SUB } from "@/app/lib/collections";
 import { readSession } from "@/app/lib/serverSession";
 import { withRetry } from "@/app/lib/firestoreRetry";
 import { analyzeDishResponse } from "@/app/lib/dishAnalysisAI";
-import type { DishResponseRecord, DiningSessionRecord, WearableSignals } from "@/app/lib/hubModels";
+import type { DishAnalysisResponseRecord, DiningSessionRecord, WearableSignals } from "@/app/lib/hubModels";
 
 const DISH_WINDOW_SIZE = 5;
 // EMA smoothing factor (higher = more weight on new samples)
@@ -96,7 +96,7 @@ export async function POST(
 
         await withRetry(async () => {
             const dishResponseRef = restaurantRef.collection(SUB.DISH_RESPONSES).doc();
-            const record: DishResponseRecord = {
+            const record: DishAnalysisResponseRecord = {
                 sessionId,
                 customerUid: session.sub,
                 dishName,
@@ -128,7 +128,7 @@ export async function POST(
 
     await withRetry(async () => {
         const dishResponseRef = restaurantRef.collection(SUB.DISH_RESPONSES).doc();
-        const record: DishResponseRecord = {
+        const record: DishAnalysisResponseRecord = {
             sessionId,
             customerUid: session.sub,
             dishName,

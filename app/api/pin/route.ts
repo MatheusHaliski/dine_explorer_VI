@@ -140,7 +140,7 @@ function buildClearCookie() {
 
 export async function POST(request: NextRequest): Promise<Response> {
     const identity = await verifyAllowedGoogleIdentity(request);
-    if (!identity.ok) {
+    if (identity.ok === false) {
         return identity.response;
     }
     const hash = "$2a$12$uyqScQMO6BwwjGmF9y2Xp.Tit5D/KldHFkY6ufZ7Q1o39GwRyfKWG";

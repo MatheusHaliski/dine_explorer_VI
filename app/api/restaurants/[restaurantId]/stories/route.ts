@@ -15,7 +15,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const payload = (await request.json()) as Partial<StoryRecord>;
   if (!payload.authorUid || !payload.mediaUrl) return NextResponse.json({ error: "authorUid and mediaUrl required" }, { status: 400 });
   const createdAt = Date.now();
-  const story: StoryRecord = { restaurantId, authorUid: payload.authorUid, mediaUrl: payload.mediaUrl, title: payload.title, createdAt, expiresAt: payload.expiresAt ?? createdAt + 24 * 60 * 60 * 1000 };
+  const story: StoryRecord = { restaurantId, authorUid: payload.authorUid, mediaUrl: payload.mediaUrl, ...(payload.title !== undefined && { title: payload.title }), createdAt, expiresAt: payload.expiresAt ?? createdAt + 24 * 60 * 60 * 1000 };
   const doc = await getAdminFirestore().collection("restaurants").doc(restaurantId).collection("stories").add(story);
   return NextResponse.json({ ok: true, id: doc.id, story });
 }
