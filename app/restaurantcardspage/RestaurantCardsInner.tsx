@@ -20,7 +20,6 @@ import {
     FILTER_GLOW_LINE,
     GLOW_BAR,
     GLOW_LINE,
-    TEXT_GLOW,
     GLASS_INPUT,
 } from "@/app/lib/uiToken";
 
@@ -60,6 +59,8 @@ type RestaurantsByIdsResponse = {
     restaurants: Restaurant[];
 };
 
+const catalogFetchPageSize = 50;
+
 async function fetchRestaurantsCatalogPage(cursor: string | null, pageSize: number): Promise<RestaurantsCatalogResponse> {
     const params = new URLSearchParams({ limit: String(pageSize) });
     if (cursor) {
@@ -72,6 +73,19 @@ async function fetchRestaurantsCatalogPage(cursor: string | null, pageSize: numb
     }
 
     return (await response.json()) as RestaurantsCatalogResponse;
+}
+
+async function fetchRestaurantsCatalog(): Promise<Restaurant[]> {
+    const catalog: Restaurant[] = [];
+    let cursor: string | null = null;
+
+    do {
+        const payload = await fetchRestaurantsCatalogPage(cursor, catalogFetchPageSize);
+        catalog.push(...payload.catalog);
+        cursor = payload.nextCursor;
+    } while (cursor);
+
+    return catalog;
 }
 
 async function fetchRestaurantsByIds(ids: string[]): Promise<Restaurant[]> {
@@ -87,7 +101,11 @@ async function fetchRestaurantsByIds(ids: string[]): Promise<Restaurant[]> {
     return payload.restaurants;
 }
 
-export function RestaurantCardsInner() {
+interface RestaurantCardsInnerProps {
+    embedded?: boolean;
+}
+
+export function RestaurantCardsInner({ embedded = false }: RestaurantCardsInnerProps) {
     const router = useRouter();
     const newcomerAlertStoragePrefix = "restaurantcards_seen_newcomer_alert";
 
@@ -104,7 +122,6 @@ export function RestaurantCardsInner() {
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
     const [error, setError] = useState("");
-    const [nextCursor, setNextCursor] = useState<string | null>(null);
     const [authProfile, setAuthProfile] = useState<AuthSessionProfile>(() =>
         getAuthSessionProfile()
     );
@@ -494,10 +511,9 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                 setLoading(true);
                 setError("");
 
-                const payload = await fetchRestaurantsCatalogPage(null, pageSize);
+                const restaurants = await fetchRestaurantsCatalog();
                 if (!isMounted) return;
-                setCatalog(payload.catalog);
-                setNextCursor(payload.nextCursor);
+                setCatalog(restaurants);
             } catch (err) {
                 console.error("[RestaurantCardsPage] load failed:", err);
                 if (isMounted) setError("Failed to load restaurants.");
@@ -519,21 +535,6 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
         }
     };
 
-    const handleLoadMoreClick = async () => {
-        if (!nextCursor) return;
-
-        try {
-            setLoadingMore(true);
-            const payload = await fetchRestaurantsCatalogPage(nextCursor, pageSize);
-            setCatalog((prev) => [...prev, ...payload.catalog]);
-            setNextCursor(payload.nextCursor);
-        } catch (err) {
-            console.error("[RestaurantCardsPage] catalog load more failed:", err);
-            setError("Failed to load more restaurants.");
-        } finally {
-            setLoadingMore(false);
-        }
-    };
     const handleLoadMore = async (missingIds: string[]) => {
         try {
             setLoadingMore(true);
@@ -751,15 +752,25 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
         );
     };
 
-    return (
-        <div className="relative min-h-screen fe-fragmented-texture text-black" style={pageBackgroundStyle}>
-            <div className="pointer-events-none absolute inset-0 opacity-80">
-                <div className="absolute -left-24 top-16 h-72 w-72 rounded-full bg-[#22c55e]/20 blur-[140px]" />
-                <div className="absolute left-1/2 top-32 h-80 w-80 -translate-x-1/2 rounded-full bg-[#38bdf8]/25 blur-[160px]" />
-                <div className="absolute bottom-12 right-16 h-56 w-56 rounded-full bg-[#f97316]/20 blur-[120px]" />
-            </div>
+    const rootClassName = embedded
+        ? "relative text-black"
+        : "relative min-h-screen fe-fragmented-texture text-black";
+    const rootStyle = embedded ? undefined : pageBackgroundStyle;
+    const contentClassName = embedded
+        ? "mx-auto max-w-8xl font-sharetech text-white relative z-10"
+        : "mx-auto max-w-8xl py-6 font-sharetech text-white sm:px-6 relative z-10";
 
-            <div className="mx-auto max-w-8xl py-6 font-sharetech text-white sm:px-6 relative z-10">
+    return (
+        <div className={rootClassName} style={rootStyle}>
+            {!embedded ? (
+                <div className="pointer-events-none absolute inset-0 opacity-80">
+                    <div className="absolute -left-24 top-16 h-72 w-72 rounded-full bg-[#22c55e]/20 blur-[140px]" />
+                    <div className="absolute left-1/2 top-32 h-80 w-80 -translate-x-1/2 rounded-full bg-[#38bdf8]/25 blur-[160px]" />
+                    <div className="absolute bottom-12 right-16 h-56 w-56 rounded-full bg-[#f97316]/20 blur-[120px]" />
+                </div>
+            ) : null}
+
+            <div className={contentClassName}>
                 <header
                     className={[
                         "relative flex flex-wrap items-center justify-between gap-4 px-6 py-5",
@@ -989,7 +1000,7 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                     ) : null}
                 </header>
 
-                <section className="mt-4 m-3.5 min-w-2xl">
+                <section className={embedded ? "mt-4 min-w-2xl" : "mt-4 m-3.5 min-w-2xl"}>
                     {renderPaginationNavbar("mb-5")}
 
                     {!loading && error ? (
@@ -1137,19 +1148,6 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                     </div>
 
                     {renderPaginationNavbar()}
-
-                    {nextCursor ? (
-                        <div className="mt-5 flex justify-center">
-                            <button
-                                type="button"
-                                onClick={handleLoadMoreClick}
-                                disabled={loadingMore}
-                                className="h-11 rounded-2xl border border-white/30 bg-white/10 px-6 text-sm font-semibold text-white transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                                {loadingMore ? "Loading more…" : "Load more restaurants"}
-                            </button>
-                        </div>
-                    ) : null}
                 </section>
             </div>
         </div>
