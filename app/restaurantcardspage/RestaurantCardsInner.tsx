@@ -47,6 +47,14 @@ import {
 
 import { getAuthSessionToken } from "@/app/lib/authSession";
 import { getLS, setLS } from "@/app/lib/SafeStorage";
+import { loadMealSchemes, type MealScheme } from "@/app/lib/mealSchemes";
+import {
+    getActorEmail,
+    getRestaurantInteractions,
+    likeRestaurant,
+    favoriteRestaurant,
+} from "@/app/lib/social/socialClient";
+import type { RestaurantInteraction } from "@/app/lib/social/socialModel";
 /* =========================
    Data fetch (Server)
 ========================= */
@@ -73,19 +81,6 @@ async function fetchRestaurantsCatalogPage(cursor: string | null, pageSize: numb
     }
 
     return (await response.json()) as RestaurantsCatalogResponse;
-}
-
-async function fetchRestaurantsCatalog(): Promise<Restaurant[]> {
-    const catalog: Restaurant[] = [];
-    let cursor: string | null = null;
-
-    do {
-        const payload = await fetchRestaurantsCatalogPage(cursor, catalogFetchPageSize);
-        catalog.push(...payload.catalog);
-        cursor = payload.nextCursor;
-    } while (cursor);
-
-    return catalog;
 }
 
 async function fetchRestaurantsByIds(ids: string[]): Promise<Restaurant[]> {
@@ -120,7 +115,7 @@ export function RestaurantCardsInner({ embedded = false }: RestaurantCardsInnerP
         () => new Set()
     );
     const [loading, setLoading] = useState(true);
-    const [loadingMore, setLoadingMore] = useState(false);
+    const [loadingBackground, setLoadingBackground] = useState(false);
     const [error, setError] = useState("");
     const [authProfile, setAuthProfile] = useState<AuthSessionProfile>(() =>
         getAuthSessionProfile()
@@ -129,6 +124,10 @@ export function RestaurantCardsInner({ embedded = false }: RestaurantCardsInnerP
     const [authError, setAuthError] = useState("");
 
     const [cardImageUrls, setCardImageUrls] = useState<Record<string, string>>({});
+
+    // [SOCIAL] Estado de curtidas/favoritos por restaurante + esquemas locais para o selo de vínculo.
+    const [interactions, setInteractions] = useState<Record<string, RestaurantInteraction>>({});
+    const [localSchemes, setLocalSchemes] = useState<MealScheme[]>([]);
 
     const [nameQuery, setNameQuery] = useState("");
     const [country, setCountry] = useState("");
@@ -430,6 +429,85 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                 .filter(Boolean) as Restaurant[],
         [catalogById, detailsById, pageIds]
     );
+
+    // [SOCIAL] Carrega esquemas locais (para o selo restaurante + esquema + peças) e reage a mudanças.
+    useEffect(() => {
+        const refresh = () => setLocalSchemes(loadMealSchemes());
+        refresh();
+        if (typeof window === "undefined") return undefined;
+        window.addEventListener("dine-schemes-change", refresh);
+        return () => window.removeEventListener("dine-schemes-change", refresh);
+    }, []);
+
+    // [SOCIAL] Mapa restaurantId → esquemas locais vinculados.
+    const schemesByRestaurant = useMemo(() => {
+        const map: Record<string, MealScheme[]> = {};
+        localSchemes.forEach((scheme) => {
+            if (!scheme.restaurantId) return;
+            (map[scheme.restaurantId] ??= []).push(scheme);
+        });
+        return map;
+    }, [localSchemes]);
+
+    // [SOCIAL] Busca o estado de curtida/favorito dos restaurantes da página atual (em lote).
+    useEffect(() => {
+        if (!pageIds.length) return;
+        let active = true;
+        getRestaurantInteractions(pageIds).then((map) => {
+            if (!active) return;
+            setInteractions((prev) => ({ ...prev, ...map }));
+        });
+        return () => {
+            active = false;
+        };
+    }, [pageIds]);
+
+    const handleToggleLike = async (restaurant: Restaurant) => {
+        if (!getActorEmail()) {
+            router.push("/authview");
+            return;
+        }
+        const current = interactions[restaurant.id] ?? { liked: false, saved: false, likesCount: 0 };
+        const nextLiked = !current.liked;
+        // Atualização otimista.
+        setInteractions((prev) => ({
+            ...prev,
+            [restaurant.id]: {
+                ...current,
+                liked: nextLiked,
+                likesCount: Math.max(0, current.likesCount + (nextLiked ? 1 : -1)),
+            },
+        }));
+        const res = await likeRestaurant(restaurant.id, nextLiked);
+        if (res) {
+            setInteractions((prev) => ({
+                ...prev,
+                [restaurant.id]: { ...(prev[restaurant.id] ?? current), liked: res.liked, likesCount: res.likesCount },
+            }));
+        }
+    };
+
+    const handleToggleFavorite = async (restaurant: Restaurant) => {
+        if (!getActorEmail()) {
+            router.push("/authview");
+            return;
+        }
+        const current = interactions[restaurant.id] ?? { liked: false, saved: false, likesCount: 0 };
+        const nextSaved = !current.saved;
+        setInteractions((prev) => ({
+            ...prev,
+            [restaurant.id]: { ...current, saved: nextSaved },
+        }));
+        await favoriteRestaurant(restaurant.id, nextSaved, {
+            name: restaurant.name ?? "",
+            photo:
+                restaurant.photo || restaurant.imagePath || restaurant.photoPath || restaurant.storagePath || "",
+            city: restaurant.city,
+            state: restaurant.state,
+            country: restaurant.country,
+        });
+    };
+
     useEffect(() => {
         const token = getAuthSessionToken();
         if (!token) {
@@ -511,14 +589,31 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                 setLoading(true);
                 setError("");
 
-                const restaurants = await fetchRestaurantsCatalog();
-                if (!isMounted) return;
-                setCatalog(restaurants);
+                const batchSize = catalogFetchPageSize;
+                const accumulated: Restaurant[] = [];
+                let cursor: string | null = null;
+                let firstBatch = true;
+
+                do {
+                    const payload = await fetchRestaurantsCatalogPage(cursor, batchSize);
+                    if (!isMounted) return;
+                    accumulated.push(...payload.catalog);
+                    setCatalog([...accumulated]);
+                    cursor = payload.nextCursor;
+                    if (firstBatch) {
+                        firstBatch = false;
+                        setLoading(false);
+                        if (cursor) setLoadingBackground(true);
+                    }
+                } while (cursor);
             } catch (err) {
                 console.error("[RestaurantCardsPage] load failed:", err);
                 if (isMounted) setError("Failed to load restaurants.");
             } finally {
-                if (isMounted) setLoading(false);
+                if (isMounted) {
+                    setLoading(false);
+                    setLoadingBackground(false);
+                }
             }
         }
 
@@ -537,7 +632,6 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
 
     const handleLoadMore = async (missingIds: string[]) => {
         try {
-            setLoadingMore(true);
             const items = await fetchRestaurantsByIds(missingIds);
             if (items.length) {
                 setDetailsById((prev) => {
@@ -562,8 +656,6 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
         } catch (err) {
             console.error("[RestaurantCardsPage] details load failed:", err);
             setError("Failed to load restaurant details.");
-        } finally {
-            setLoadingMore(false);
         }
     };
 
@@ -722,6 +814,9 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                         {Math.min(currentPage * pageSize, filteredIds.length)}
                     </span>{" "}
                     of <span className="font-semibold text-white">{filteredIds.length}</span> restaurants
+                    {loadingBackground ? (
+                        <span className="ml-3 text-xs text-white/70">(loading more…)</span>
+                    ) : null}
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -745,7 +840,7 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                         disabled={currentPage === totalPages}
                         className="h-10 rounded-xl border border-white/25 bg-white/10 px-4 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
                     >
-                        {loadingMore ? "Loading…" : "Next"}
+                        Next
                     </button>
                 </div>
             </div>
@@ -1003,6 +1098,12 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                 <section className={embedded ? "mt-4 min-w-2xl" : "mt-4 m-3.5 min-w-2xl"}>
                     {renderPaginationNavbar("mb-5")}
 
+                    {loading ? (
+                        <p className="rounded-2xl border border-white/14 bg-white/[0.08] px-4 py-3 text-sm text-white/70 backdrop-blur-2xl">
+                            Loading restaurants...
+                        </p>
+                    ) : null}
+
                     {!loading && error ? (
                         <p className="whitespace-pre-wrap rounded-2xl border border-red-400/25 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-200 backdrop-blur-2xl">
                             {error}
@@ -1031,31 +1132,37 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                                 cardImageUrls[restaurant.id] ||
                                 fallbackImage;
 
+                            const interaction =
+                                interactions[restaurant.id] ?? { liked: false, saved: false, likesCount: 0 };
+                            const linkedSchemes = schemesByRestaurant[restaurant.id] ?? [];
+                            const linkedPiecesCount = linkedSchemes.reduce(
+                                (sum, scheme) => sum + scheme.slots.filter((slot) => slot.foodItemId).length,
+                                0
+                            );
+                            const detailHref = `/restaurantinfopage/${restaurant.id}`;
+
                             return (
-                                <Link
+                                <article
                                     key={restaurant.id}
-                                    href={`/restaurantinfopage/${restaurant.id}`}
-                                    className="text-inherit no-underline"
+                                    className={[
+                                        "group relative rounded-3xl",
+                                        "border-yellow-200",
+                                        "rounded-2xl",
+                                        "border-4",
+                                        "shadow-[0_0_0_1px_rgba(249,115,22,0.55),0_18px_60px_rgba(249,115,22,0.45)]",
+
+                                        // 🌈 FUNDO IGUAL AO FILTRO
+                                        GLOW_BAR,
+
+                                        "transition duration-200",
+                                        "min-h-[300px]",
+                                        "w-full max-w-[320px]",
+                                    ].join(" ")}
                                 >
-                                    <article
-                                        className={[
-                                            "group relative rounded-3xl",
-                                            "border-yellow-200",
-                                            "rounded-2xl",
-                                            "border-4",
-                                            "shadow-[0_0_0_1px_rgba(249,115,22,0.55),0_18px_60px_rgba(249,115,22,0.45)]",
+                                    {/* brilho sutil superior */}
+                                    <div className="pointer-events-none absolute inset-0 rounded-3xl bg-[linear-gradient(to_bottom,rgba(255,255,255,0.18),rgba(255,255,255,0)_45%)]" />
 
-                                            // 🌈 FUNDO IGUAL AO FILTRO
-                                            GLOW_BAR,
-
-                                            "transition duration-200",
-                                            "min-h-[300px]",
-                                            "w-full max-w-[320px]",
-                                        ].join(" ")}
-                                    >
-                                        {/* brilho sutil superior */}
-                                        <div className="pointer-events-none absolute inset-0 rounded-3xl bg-[linear-gradient(to_bottom,rgba(255,255,255,0.18),rgba(255,255,255,0)_45%)]" />
-
+                                    <Link href={detailHref} className="block text-inherit no-underline">
                                         {cardImageSrc ? (
                                             <div className="relative">
                                                 <img
@@ -1066,22 +1173,39 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
                                                     className="block h-40 w-full object-cover rounded-t-3xl opacity-95"
                                                 />
                                                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-black/0 to-black/0" />
+
+                                                {/* [SOCIAL] Selo de vínculo restaurante + esquema + peças */}
+                                                {linkedSchemes.length > 0 ? (
+                                                    <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full border border-emerald-300 bg-emerald-500/90 px-2.5 py-1 text-[11px] font-semibold text-white shadow-[0_6px_18px_rgba(0,0,0,0.35)]">
+                                                        🍱 {linkedSchemes.length} esquema{linkedSchemes.length === 1 ? "" : "s"}
+                                                        {linkedPiecesCount ? ` · ${linkedPiecesCount} peça${linkedPiecesCount === 1 ? "" : "s"}` : ""}
+                                                    </span>
+                                                ) : null}
+
+                                                {interaction.saved ? (
+                                                    <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-400/90 px-2 py-1 text-[11px] font-semibold text-black">
+                                                        🔖 Favorito
+                                                    </span>
+                                                ) : null}
                                             </div>
                                         ) : (
                                             <div aria-hidden className="h-40 w-full rounded-t-3xl bg-white/5" />
                                         )}
+                                    </Link>
 
-                                        {/* ⬇️ INNER DIV — BRANCA, TEXTO PRETO, BORDA PRETA */}
-                                        <div className="relative p-4">
-                                            <div className="rounded-2xl border-4 border-yellow-200 bg-white px-4 py-3 text-center shadow-[0_10px_30px_rgba(0,0,0,0.25)]">
-                                                <h3 className="text-lg font-semibold leading-tight text-black">
+                                    {/* ⬇️ INNER DIV — BRANCA, TEXTO PRETO, BORDA PRETA */}
+                                    <div className="relative p-4">
+                                        <div className="rounded-2xl border-4 border-yellow-200 bg-white px-4 py-3 text-center shadow-[0_10px_30px_rgba(0,0,0,0.25)]">
+                                            <Link href={detailHref} className="block text-inherit no-underline">
+                                                <h3 className="text-lg font-semibold leading-tight text-black hover:underline">
                                                     {restaurant.name || "Unnamed Restaurant"}
                                                 </h3>
+                                            </Link>
 
-                                                <span
-                                                    aria-label={`Restaurant rating ${display.toFixed(1)} out of 5`}
-                                                    className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-black"
-                                                >
+                                            <span
+                                                aria-label={`Restaurant rating ${display.toFixed(1)} out of 5`}
+                                                className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-black"
+                                            >
         <span className="inline-flex gap-0.5 text-base">
           {Array.from({ length: 5 }, (_, index) => (
               <span
@@ -1097,52 +1221,92 @@ const pageBackgroundStyle = useMemo<CSSProperties | undefined>(() => {
         </span>
       </span>
 
-                                                <div className="my-3 h-px w-full bg-black/15" />
+                                            <div className="my-3 h-px w-full bg-black/15" />
 
-                                                <p className="text-sm text-black">
-                                                    {[restaurant.address, restaurant.street, restaurant.city, restaurant.state]
-                                                        .filter(Boolean)
-                                                        .join(", ") || "Address unavailable."}
-                                                </p>
+                                            <p className="text-sm text-black">
+                                                {[restaurant.address, restaurant.street, restaurant.city, restaurant.state]
+                                                    .filter(Boolean)
+                                                    .join(", ") || "Address unavailable."}
+                                            </p>
 
-                                                <div className="mt-2 text-xs text-black/70">
-                                                    <div>
-                                                        {restaurant.city || "Unknown city"}
-                                                        {restaurant.state ? `, ${restaurant.state}` : ""}
-                                                    </div>
+                                            <div className="mt-2 text-xs text-black/70">
+                                                <div>
+                                                    {restaurant.city || "Unknown city"}
+                                                    {restaurant.state ? `, ${restaurant.state}` : ""}
+                                                </div>
 
-                                                    <div className="mt-1 inline-flex items-center gap-2">
-                                                        {restaurant.country ? (
-                                                            (() => {
-                                                                const flag = getCountryFlagPng(restaurant.country);
-                                                                return (
-                                                                    <>
-                                                                        {flag ? (
-                                                                            <img
-                                                                                src={flag.src}
-                                                                                alt={flag.alt}
-                                                                                className="h-[18px] w-[18px]"
-                                                                            />
-                                                                        ) : (
-                                                                            <span aria-hidden>🌍</span>
-                                                                        )}
-                                                                        <span>{restaurant.country}</span>
-                                                                    </>
-                                                                );
-                                                            })()
-                                                        ) : (
-                                                            <>
-                                                                <span aria-hidden>🌍</span>
-                                                                <span>Unknown country</span>
-                                                            </>
-                                                        )}
-                                                    </div>
+                                                <div className="mt-1 inline-flex items-center gap-2">
+                                                    {restaurant.country ? (
+                                                        (() => {
+                                                            const flag = getCountryFlagPng(restaurant.country);
+                                                            return (
+                                                                <>
+                                                                    {flag ? (
+                                                                        <img
+                                                                            src={flag.src}
+                                                                            alt={flag.alt}
+                                                                            className="h-[18px] w-[18px]"
+                                                                        />
+                                                                    ) : (
+                                                                        <span aria-hidden>🌍</span>
+                                                                    )}
+                                                                    <span>{restaurant.country}</span>
+                                                                </>
+                                                            );
+                                                        })()
+                                                    ) : (
+                                                        <>
+                                                            <span aria-hidden>🌍</span>
+                                                            <span>Unknown country</span>
+                                                        </>
+                                                    )}
                                                 </div>
                                             </div>
-                                        </div>
-                                    </article>
 
-                                </Link>
+                                            {/* [SOCIAL] Barra de ações: rede social do card */}
+                                            <div className="mt-3 flex items-center justify-center gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleToggleLike(restaurant)}
+                                                    aria-pressed={interaction.liked}
+                                                    aria-label="Curtir restaurante"
+                                                    className={[
+                                                        "inline-flex items-center gap-1 rounded-xl border px-2.5 py-1.5 text-xs font-semibold transition",
+                                                        interaction.liked
+                                                            ? "border-rose-400 bg-rose-50 text-rose-600"
+                                                            : "border-black/15 bg-white text-black/70 hover:bg-black/5",
+                                                    ].join(" ")}
+                                                >
+                                                    <span>{interaction.liked ? "❤️" : "🤍"}</span>
+                                                    <span>{interaction.likesCount}</span>
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleToggleFavorite(restaurant)}
+                                                    aria-pressed={interaction.saved}
+                                                    aria-label="Salvar em favoritos"
+                                                    className={[
+                                                        "inline-flex items-center gap-1 rounded-xl border px-2.5 py-1.5 text-xs font-semibold transition",
+                                                        interaction.saved
+                                                            ? "border-amber-400 bg-amber-50 text-amber-600"
+                                                            : "border-black/15 bg-white text-black/70 hover:bg-black/5",
+                                                    ].join(" ")}
+                                                >
+                                                    <span>{interaction.saved ? "🔖" : "📑"}</span>
+                                                    <span>{interaction.saved ? "Salvo" : "Salvar"}</span>
+                                                </button>
+                                            </div>
+
+                                            <Link
+                                                href={`${detailHref}#comentarios`}
+                                                className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl border border-black bg-black px-3 py-2 text-xs font-semibold text-white no-underline transition hover:bg-black/85"
+                                            >
+                                                💬 Ver comentários
+                                            </Link>
+                                        </div>
+                                    </div>
+                                </article>
                             );
                         })}
                     </div>

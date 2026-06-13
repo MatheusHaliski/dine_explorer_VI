@@ -16,6 +16,7 @@ import {
   TITLE_FONT_OPTIONS,
   addMealScheme,
   buildBackgroundStyle,
+  buildPublicSchemePayload,
   type BackgroundConfig,
   type ListFormat,
   type MealOccasion,
@@ -24,6 +25,7 @@ import {
   type SchemeVisibility,
 } from '@/app/lib/mealSchemes';
 import { getAuthSessionProfile } from '@/app/lib/authSession';
+import { getActorEmail, publishScheme } from '@/app/lib/social/socialClient';
 import MealBackgroundStudioModal from '@/app/components/food/MealBackgroundStudioModal';
 import MealSchemeList from '@/app/components/food/MealSchemeList';
 import { PageBanner, EmptyState } from './MyPantryView';
@@ -61,6 +63,39 @@ export default function CreateMealSchemeView() {
   const [mood, setMood] = useState<string>(MOOD_OPTIONS[0]);
   const [titleFont, setTitleFont] = useState<string>(TITLE_FONT_OPTIONS[0]);
   const [aiPrompt, setAiPrompt] = useState('');
+
+  // [SOCIAL] Vínculo opcional com um restaurante do catálogo (selo restaurante + esquema + peças).
+  const [restaurantId, setRestaurantId] = useState<string>('');
+  const [restaurantName, setRestaurantName] = useState<string>('');
+  const [restaurantQuery, setRestaurantQuery] = useState('');
+  const [restaurantOptions, setRestaurantOptions] = useState<{ id: string; name: string }[]>([]);
+  const [loadingRestaurants, setLoadingRestaurants] = useState(false);
+
+  const loadRestaurantOptions = async () => {
+    if (restaurantOptions.length || loadingRestaurants) return;
+    setLoadingRestaurants(true);
+    try {
+      const collected: { id: string; name: string }[] = [];
+      let cursor: string | null = null;
+      let pages = 0;
+      do {
+        const params = new URLSearchParams({ limit: '50' });
+        if (cursor) params.set('cursor', cursor);
+        const res = await fetch(`/api/restaurants/catalog?${params.toString()}`);
+        if (!res.ok) break;
+        const data = (await res.json()) as { catalog: { id: string; name?: string }[]; nextCursor: string | null };
+        data.catalog.forEach((r) => collected.push({ id: r.id, name: r.name || 'Sem nome' }));
+        cursor = data.nextCursor;
+        pages += 1;
+      } while (cursor && pages < 8); // limita a ~400 restaurantes para o seletor
+      collected.sort((a, b) => a.name.localeCompare(b.name));
+      setRestaurantOptions(collected);
+    } catch {
+      /* silencioso — seletor de restaurante é opcional */
+    } finally {
+      setLoadingRestaurants(false);
+    }
+  };
 
   const [slots, setSlots] = useState<MealSchemeSlot[]>(
     DEFAULT_SLOTS.map((s) => ({ slotId: s.slotId, label: s.label, foodItemId: null }))
@@ -124,12 +159,12 @@ export default function CreateMealSchemeView() {
     if (i > 0) setCurrentStep(STEPS[i - 1].id);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setSaving(true);
     setSavedFeedback('');
     try {
       const profile = getAuthSessionProfile();
-      addMealScheme({
+      const saved = addMealScheme({
         name: name.trim() || 'Esquema sem nome',
         description: description.trim(),
         occasion, visibility, mode, slots,
@@ -140,8 +175,31 @@ export default function CreateMealSchemeView() {
         background,
         pieceBackgrounds,
         listFormat,
+        restaurantId: restaurantId || undefined,
+        restaurantName: restaurantName || undefined,
       });
-      setSavedFeedback('Esquema salvo em "Esquemas Salvos".');
+
+      // [SOCIAL] Esquemas públicos são publicados no Firestore para outros usuários verem,
+      // curtirem, comentarem e salvarem.
+      if (visibility === 'public') {
+        const actor = getActorEmail();
+        if (actor) {
+          const payload = buildPublicSchemePayload(saved, byId, {
+            email: actor,
+            displayName: profile.email || actor,
+          });
+          const published = await publishScheme(payload as unknown as Record<string, unknown>);
+          setSavedFeedback(
+            published
+              ? 'Esquema salvo e publicado no feed social (Dine Runway).'
+              : 'Esquema salvo localmente. Não foi possível publicar agora.'
+          );
+        } else {
+          setSavedFeedback('Esquema salvo. Faça login para publicá-lo no feed social.');
+        }
+      } else {
+        setSavedFeedback('Esquema salvo em "Esquemas Salvos".');
+      }
     } catch (err) {
       console.error(err);
       setSavedFeedback('Falha ao salvar.');
@@ -248,6 +306,48 @@ export default function CreateMealSchemeView() {
               </Field>
               <Field label="Descrição">
                 <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} style={{ ...input, resize: 'vertical', gridColumn: '1 / -1' }} />
+              </Field>
+
+              {/* [SOCIAL] Vincular restaurante — cria o selo restaurante + esquema + peças */}
+              <Field label="Vincular restaurante (opcional)">
+                <div style={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                  {restaurantId ? (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', padding: '0.5rem 0.7rem', borderRadius: '0.55rem', border: '1px solid rgba(52,211,153,0.6)', background: 'rgba(52,211,153,0.14)' }}>
+                      <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>🍱 {restaurantName}</span>
+                      <button type="button" onClick={() => { setRestaurantId(''); setRestaurantName(''); }} style={btnSecondary}>Remover</button>
+                    </div>
+                  ) : (
+                    <>
+                      <input
+                        value={restaurantQuery}
+                        onFocus={loadRestaurantOptions}
+                        onChange={(e) => setRestaurantQuery(e.target.value)}
+                        placeholder={loadingRestaurants ? 'Carregando restaurantes…' : 'Buscar restaurante por nome'}
+                        style={input}
+                      />
+                      {restaurantQuery.trim() && (
+                        <div style={{ maxHeight: '10rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.25rem', borderRadius: '0.55rem', border: '1px solid rgba(255,255,255,0.1)', padding: '0.3rem', background: 'rgba(15,23,42,0.6)' }}>
+                          {restaurantOptions
+                            .filter((r) => r.name.toLowerCase().includes(restaurantQuery.trim().toLowerCase()))
+                            .slice(0, 20)
+                            .map((r) => (
+                              <button
+                                key={r.id}
+                                type="button"
+                                onClick={() => { setRestaurantId(r.id); setRestaurantName(r.name); setRestaurantQuery(''); }}
+                                style={{ textAlign: 'left', padding: '0.4rem 0.6rem', borderRadius: '0.45rem', border: 'none', cursor: 'pointer', background: 'transparent', color: '#fff', fontSize: '0.82rem' }}
+                              >
+                                {r.name}
+                              </button>
+                            ))}
+                          {restaurantOptions.filter((r) => r.name.toLowerCase().includes(restaurantQuery.trim().toLowerCase())).length === 0 && (
+                            <div style={{ fontSize: '0.78rem', opacity: 0.6, padding: '0.3rem 0.6rem' }}>Nenhum restaurante encontrado.</div>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
               </Field>
             </div>
           )}

@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react';
 import { getAuthSessionProfile, type AuthSessionProfile } from '@/app/lib/authSession';
 import { loadFoodItems, type FoodItem } from '@/app/lib/foodItems';
 import { loadMealSchemes, type MealScheme } from '@/app/lib/mealSchemes';
+import { getActorEmail, getUserProfile, type UserProfileResponse } from '@/app/lib/social/socialClient';
 import { PageBanner } from './MyPantryView';
 
 export default function ProfileView() {
   const [profile, setProfile] = useState<AuthSessionProfile | null>(null);
   const [items, setItems] = useState<FoodItem[]>([]);
   const [schemes, setSchemes] = useState<MealScheme[]>([]);
+  const [social, setSocial] = useState<UserProfileResponse | null>(null);
 
   useEffect(() => {
     setProfile(getAuthSessionProfile());
@@ -18,6 +20,8 @@ export default function ProfileView() {
       setSchemes(loadMealSchemes());
     };
     refresh();
+    const actor = getActorEmail();
+    if (actor) getUserProfile(actor).then(setSocial);
     if (typeof window !== 'undefined') {
       window.addEventListener('dine-pantry-change', refresh);
       window.addEventListener('dine-schemes-change', refresh);
@@ -48,11 +52,20 @@ export default function ProfileView() {
 
         <section style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))', gap: '0.75rem' }}>
+            <Stat label="Seguidores" value={social?.user.followersCount ?? 0} />
+            <Stat label="Seguindo" value={social?.user.followingCount ?? 0} />
+            <Stat label="Esquemas públicos" value={social?.user.publicSchemesCount ?? schemes.filter((s) => s.visibility === 'public').length} />
             <Stat label="Itens cadastrados" value={items.length} />
             <Stat label="Esquemas salvos" value={schemes.length} />
-            <Stat label="Esquemas públicos" value={schemes.filter((s) => s.visibility === 'public').length} />
             <Stat label="Favoritos" value={items.filter((i) => i.status === 'favorite').length} />
           </div>
+
+          {social && (social.following.length > 0 || social.followers.length > 0) ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: '0.75rem' }}>
+              <UserList title="Seguindo" emails={social.following} empty="Você ainda não segue ninguém." />
+              <UserList title="Seguidores" emails={social.followers} empty="Você ainda não tem seguidores." />
+            </div>
+          ) : null}
 
           <div style={{ background: 'rgba(15,23,42,0.55)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1.1rem' }}>
             <div style={{ fontSize: '0.7rem', letterSpacing: '0.1em', color: 'rgba(241,245,249,0.55)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Configurações</div>
@@ -66,6 +79,28 @@ export default function ProfileView() {
       <style jsx>{`
         @media (max-width: 900px) { .dine-profile-grid { grid-template-columns: 1fr !important; } }
       `}</style>
+    </div>
+  );
+}
+
+function UserList({ title, emails, empty }: { title: string; emails: string[]; empty: string }) {
+  return (
+    <div style={{ background: 'rgba(15,23,42,0.55)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '1rem', padding: '1rem' }}>
+      <div style={{ fontSize: '0.7rem', letterSpacing: '0.1em', color: 'rgba(241,245,249,0.55)', textTransform: 'uppercase', marginBottom: '0.6rem' }}>{title} ({emails.length})</div>
+      {emails.length === 0 ? (
+        <div style={{ fontSize: '0.8rem', color: 'rgba(241,245,249,0.6)' }}>{empty}</div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+          {emails.slice(0, 12).map((e) => (
+            <div key={e} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div style={{ width: '1.8rem', height: '1.8rem', borderRadius: '50%', background: 'linear-gradient(135deg,#22d3ee,#a855f7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.7rem' }}>
+                {e.slice(0, 1).toUpperCase()}
+              </div>
+              <span style={{ fontSize: '0.8rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
